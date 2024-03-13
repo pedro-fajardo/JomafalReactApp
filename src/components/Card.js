@@ -37,7 +37,7 @@ function EquipmentCard() {
                         <ListGroup.Item>Vestibulum at eros</ListGroup.Item>
                      </ListGroup>
                      <Card.Body>
-                        <Button>Go somewhere</Button>
+                        <Button>Ver Detalhe</Button>
                      </Card.Body>
                   </Card>
                </Col>
