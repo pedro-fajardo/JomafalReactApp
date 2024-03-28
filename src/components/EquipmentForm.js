@@ -1,62 +1,175 @@
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
+// EquipmentForm.js
+import React, { useState } from "react";
+import "dayjs/locale/en-gb";
+import { Form, Button, Dropdown, Col, Row } from "react-bootstrap";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { MuiTelInput } from "mui-tel-input";
+import { Label } from "reactstrap";
 
-function EquipmentForm() {
-  return (
-    <Form>
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="formGridEmail">
-          <Form.Label>Nome</Form.Label>
-          <Form.Control type="text" placeholder="Introduzir Nome do Equipamento" autoFocus/>
-        </Form.Group>
+function EquipmentForm({ onSubmit }) {
+   const [receivedDate, setReceivedDate] = useState(null);
+	const [documentNumber, setDocumentNumber] = useState("");
+   const [address, setAddress] = useState("");
+   const [phoneNumber, setPhoneNumber] = useState("");
+   const [clientName, setClientName] = useState("");
+   const [productNumber, setProductNumber] = useState("");
+   const [serialNumber, setSerialNumber] = useState("");
+   const [name, setName] = useState("");
+   const [breakdown, setBreakdown] = useState("");
+	const [observations, setObservations] = useState("");
 
-        <Form.Group as={Col} controlId="formGridPassword">
-          <Form.Label>Número de Série</Form.Label>
-          <Form.Control type="text" placeholder="Introduzir Número de Série do Equipamento"/>
-        </Form.Group>
-      </Row>
 
-      <Form.Group className="mb-3" controlId="formGridAddress1">
-        <Form.Label>Cliente</Form.Label>
-        <Form.Control type="text" placeholder="Nome do Cliente" />
-      </Form.Group>
+   const handleSubmit = (e) => {
+      e.preventDefault();
+      onSubmit({ productNumber, serialNumber, name, breakdown });
+      setProductNumber("");
+      setSerialNumber("");
+      setName("");
+      setBreakdown("");
+   };
 
-      <Form.Group className="mb-3" controlId="formGridAddress2">
-        <Form.Label>Contacto</Form.Label>
-        <Form.Control type="phone" placeholder="Apartment, studio, or floor" />
-      </Form.Group>
+   return (
+      <Form onSubmit={handleSubmit}>
+         <Row style={{ paddingBottom: "1%" }}>
+            <Col>
+               <Label>Data e Hora de atendimento</Label>
+               <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  adapterLocale={"en-gb"}
+               >
+                  <DateTimePicker
+                     onChange={(e) => setReceivedDate(e.target.value)}
+                     value={receivedDate}
+                     slotProps={{ textField: { size: "small" } }}
+                     orientation="landscape"
+                     views={["year", "month", "day", "hours", "minutes"]}
+                  />
+               </LocalizationProvider>
+            </Col>
+            <Col></Col>
+            <Col>
+               <Form.Group
+                  style={{ paddingBottom: "1%" }}
+                  controlId="documentNumber"
+               >
+                  <Form.Label>Documento Nº</Form.Label>
+                  <Form.Control
+                     type="text"
+                     value={documentNumber}
+                     onChange={(e) => setDocumentNumber(e.target.value)}
+                     required
+                  />
+               </Form.Group>
+            </Col>
+            <Col></Col>
+         </Row>
+         <hr></hr>
 
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="formGridCity">
-          <Form.Label>City</Form.Label>
-          <Form.Control />
-        </Form.Group>
+         <h3>Cliente</h3>
+         <Form.Group style={{ paddingBottom: "1%" }} controlId="clientName">
+            <Form.Label>Nome</Form.Label>
+            <Form.Control
+               type="text"
+               value={clientName}
+               onChange={(e) => setClientName(e.target.value)}
+               required
+            />
+         </Form.Group>
+         <Form.Group style={{ paddingBottom: "1%" }} controlId="clientAddress">
+            <Form.Label>Morada</Form.Label>
+            <Form.Control
+               type="text"
+               value={address}
+               onChange={(e) => setAddress(e.target.value)}
+               required
+            />
+         </Form.Group>
+         <Row style={{ paddingBottom: "1%" }}>
+            <Col>
+               <Label>Nº de Telemóvel</Label>
+               <MuiTelInput
+                  size="small"
+                  variant="outlined"
+                  value={phoneNumber}
+                  onChange={setPhoneNumber}
+                  forceCallingCode
+                  defaultCountry="PT"
+                  disableDropdown
+                  disableFormatting
+                  inputProps={{ maxLength: 9 }}
+               ></MuiTelInput>
+            </Col>
+            <Col></Col>
+            <Col></Col>
+            <Col></Col>
+         </Row>
+         <hr></hr>
 
-        <Form.Group as={Col} controlId="formGridState">
-          <Form.Label>State</Form.Label>
-          <Form.Select defaultValue="Choose...">
-            <option>Choose...</option>
-            <option>...</option>
-          </Form.Select>
-        </Form.Group>
-
-        <Form.Group as={Col} controlId="formGridZip">
-          <Form.Label>Zip</Form.Label>
-          <Form.Control />
-        </Form.Group>
-      </Row>
-
-      <Form.Group className="mb-3" id="formGridCheckbox">
-        <Form.Check type="checkbox" label="Check me out" />
-      </Form.Group>
-
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
-    </Form>
-  );
+         <h3>Equipamento</h3>
+			<Form.Group style={{ paddingBottom: "1%" }} controlId="name">
+            <Form.Label>Nome</Form.Label>
+            <Form.Control
+               type="text"
+               value={name}
+               onChange={(e) => setName(e.target.value)}
+               required
+            />
+         </Form.Group>
+         <Row style={{ paddingBottom: "1%" }}>
+            <Col>
+               <Form.Group controlId="productNumber">
+                  <Form.Label>PNC</Form.Label>
+                  <Form.Control
+                     type="text"
+                     value={productNumber}
+                     onChange={(e) => setProductNumber(e.target.value)}
+                     required
+                  />
+               </Form.Group>
+            </Col>
+            <Col>
+               <Form.Group controlId="serialNumber">
+                  <Form.Label>SN</Form.Label>
+                  <Form.Control
+                     type="text"
+                     value={serialNumber}
+                     onChange={(e) => setSerialNumber(e.target.value)}
+                     required
+                  />
+               </Form.Group>
+            </Col>
+         </Row>
+         <Form.Group style={{ paddingBottom: "1%" }} controlId="breakdown">
+            <Form.Label>Avaria</Form.Label>
+            <Form.Control
+               as="textarea"
+               rows={4}
+               value={breakdown}
+               onChange={(e) => setBreakdown(e.target.value)}
+               required
+            />
+         </Form.Group>
+			<Form.Group style={{ paddingBottom: "1%" }} controlId="observations">
+            <Form.Label>Observações</Form.Label>
+            <Form.Control
+               as="textarea"
+               rows={2}
+               value={observations}
+               onChange={(e) => setObservations(e.target.value)}
+               required
+            />
+         </Form.Group>
+			<Row>
+				<Col md={{ span: 1, offset: 11 }}>
+					<Button variant="primary" type="submit" >
+						<div style={{fontSize:'bolder'}}>Gravar</div> 
+					</Button>
+				</Col>
+			</Row>
+      </Form>
+   );
 }
 
 export default EquipmentForm;

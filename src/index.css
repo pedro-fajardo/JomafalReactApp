@@ -1,7 +1,6 @@
 /* override bootstrap navbar colors */
 .navbar,
 .navbar-default {
-   background-image: linear-gradient(336deg, rgba(255, 0, 0, 0.836), rgb(255, 255, 255) 50%); /* override background image gradient w/ flat color */ 
    margin-bottom: 5%;
 }
 
