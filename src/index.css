@@ -1,7 +1,7 @@
 /* override bootstrap navbar colors */
 .navbar,
 .navbar-default {
-   margin-bottom: 5%;
+   margin-bottom: 3%;
 }
 
 .navbar .nav-link {

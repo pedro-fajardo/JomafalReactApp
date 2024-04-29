@@ -17,7 +17,7 @@ function EquipmentModal({isVisible, setModalVisible}) {
             </Modal.Title>
          </Modal.Header>
          <Modal.Body>
-            <EquipmentForm></EquipmentForm>
+            <EquipmentForm setModalVisible={setModalVisible}></EquipmentForm>
          </Modal.Body>
       </Modal>
    );

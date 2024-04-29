@@ -1,5 +1,6 @@
 // EquipmentForm.js
 import React, { useState } from "react";
+import axios from "axios";
 import "dayjs/locale/en-gb";
 import { Form, Button, Dropdown, Col, Row } from "react-bootstrap";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -8,9 +9,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MuiTelInput } from "mui-tel-input";
 import { Label } from "reactstrap";
 
-function EquipmentForm({ onSubmit }) {
+function EquipmentForm({ setModalVisible }) {
    const [receivedDate, setReceivedDate] = useState(null);
-	const [documentNumber, setDocumentNumber] = useState("");
+   const [documentNumber, setDocumentNumber] = useState("");
    const [address, setAddress] = useState("");
    const [phoneNumber, setPhoneNumber] = useState("");
    const [clientName, setClientName] = useState("");
@@ -18,16 +19,38 @@ function EquipmentForm({ onSubmit }) {
    const [serialNumber, setSerialNumber] = useState("");
    const [name, setName] = useState("");
    const [breakdown, setBreakdown] = useState("");
-	const [observations, setObservations] = useState("");
+   const [observations, setObservations] = useState("");
+   const [status, setStatus] = useState("new");
 
+   const putClientAndEquipent = async () => {
+      await axios.post('/api/client',
+         {
+            name: clientName,
+            phoneNumber: parseInt(phoneNumber.slice(4,14),10),
+            address: address
+         }).then((data) => {
+            axios.post('/api/equipment',
+               {
+                  name: name,
+                  serialNumber: serialNumber,
+                  productNumber: productNumber,
+                  breakdown: breakdown,
+                  observations: observations,
+                  documentNumber: documentNumber,
+                  receivedDate: receivedDate,
+                  client: data,
+                  status: status,
+               }
+            );
+            setModalVisible(false);
+         }
+      );
+
+   };
 
    const handleSubmit = (e) => {
       e.preventDefault();
-      onSubmit({ productNumber, serialNumber, name, breakdown });
-      setProductNumber("");
-      setSerialNumber("");
-      setName("");
-      setBreakdown("");
+      putClientAndEquipent();
    };
 
    return (
@@ -40,7 +63,8 @@ function EquipmentForm({ onSubmit }) {
                   adapterLocale={"en-gb"}
                >
                   <DateTimePicker
-                     onChange={(e) => setReceivedDate(e.target.value)}
+                     onChange={(value) => setReceivedDate(value)
+                     }
                      value={receivedDate}
                      slotProps={{ textField: { size: "small" } }}
                      orientation="landscape"
@@ -59,7 +83,6 @@ function EquipmentForm({ onSubmit }) {
                      type="text"
                      value={documentNumber}
                      onChange={(e) => setDocumentNumber(e.target.value)}
-                     required
                   />
                </Form.Group>
             </Col>
@@ -74,7 +97,6 @@ function EquipmentForm({ onSubmit }) {
                type="text"
                value={clientName}
                onChange={(e) => setClientName(e.target.value)}
-               required
             />
          </Form.Group>
          <Form.Group style={{ paddingBottom: "1%" }} controlId="clientAddress">
@@ -83,7 +105,6 @@ function EquipmentForm({ onSubmit }) {
                type="text"
                value={address}
                onChange={(e) => setAddress(e.target.value)}
-               required
             />
          </Form.Group>
          <Row style={{ paddingBottom: "1%" }}>
@@ -108,13 +129,12 @@ function EquipmentForm({ onSubmit }) {
          <hr></hr>
 
          <h3>Equipamento</h3>
-			<Form.Group style={{ paddingBottom: "1%" }} controlId="name">
+         <Form.Group style={{ paddingBottom: "1%" }} controlId="name">
             <Form.Label>Nome</Form.Label>
             <Form.Control
                type="text"
                value={name}
                onChange={(e) => setName(e.target.value)}
-               required
             />
          </Form.Group>
          <Row style={{ paddingBottom: "1%" }}>
@@ -125,7 +145,6 @@ function EquipmentForm({ onSubmit }) {
                      type="text"
                      value={productNumber}
                      onChange={(e) => setProductNumber(e.target.value)}
-                     required
                   />
                </Form.Group>
             </Col>
@@ -136,7 +155,6 @@ function EquipmentForm({ onSubmit }) {
                      type="text"
                      value={serialNumber}
                      onChange={(e) => setSerialNumber(e.target.value)}
-                     required
                   />
                </Form.Group>
             </Col>
@@ -148,26 +166,24 @@ function EquipmentForm({ onSubmit }) {
                rows={4}
                value={breakdown}
                onChange={(e) => setBreakdown(e.target.value)}
-               required
             />
          </Form.Group>
-			<Form.Group style={{ paddingBottom: "1%" }} controlId="observations">
+         <Form.Group style={{ paddingBottom: "1%" }} controlId="observations">
             <Form.Label>Observações</Form.Label>
             <Form.Control
                as="textarea"
                rows={2}
                value={observations}
                onChange={(e) => setObservations(e.target.value)}
-               required
             />
          </Form.Group>
-			<Row>
-				<Col md={{ span: 1, offset: 11 }}>
-					<Button variant="primary" type="submit" >
-						<div style={{fontSize:'bolder'}}>Gravar</div> 
-					</Button>
-				</Col>
-			</Row>
+         <Row>
+            <Col md={{ span: 1, offset: 11 }}>
+               <Button variant="primary" type="submit" >
+                  <div style={{ fontSize: 'bolder' }}>Gravar</div>
+               </Button>
+            </Col>
+         </Row>
       </Form>
    );
 }

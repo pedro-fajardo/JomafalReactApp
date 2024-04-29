@@ -1,5 +1,7 @@
 // EquipmentList.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { TailSpin } from "react-loader-spinner";
 import { styled } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
@@ -18,6 +20,7 @@ import {
    TableRow,
    Paper,
 } from "@mui/material";
+import { Row, Col } from 'react-bootstrap'
 import { tableCellClasses } from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
@@ -97,14 +100,30 @@ TablePaginationActions.propTypes = {
    rowsPerPage: PropTypes.number.isRequired,
 };
 
-function EquipmentList({ equipments }) {
+function EquipmentList() {
    const [searchTerm, setSearchTerm] = useState("");
    const [searchBy, setSearchBy] = useState("name");
    const [page, setPage] = React.useState(0);
    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+   const [loading, setLoading] = useState(true);
+   const [equipments, setEquipments] = useState([]);
 
-   const filteredEquipments = equipments.filter((equipment) =>
-      equipment[searchBy].toLowerCase().includes(searchTerm.toLowerCase())
+   const getEquipmentList = async () => {
+      const { data } = await axios.get('/api/equipment');
+      data.filter((equipment) =>
+         equipment[searchBy].toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setEquipments(data);
+      setLoading(false);
+   }
+
+   useEffect(() => {
+      getEquipmentList();
+   }, []);
+
+   var filteredEquipments = ( searchBy === "clientName" 
+      ? equipments.filter((equipment) => equipment.client.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      : equipments.filter((equipment) => equipment[searchBy].toLowerCase().includes(searchTerm.toLowerCase()))
    );
 
    // Avoid a layout jump when reaching the last page with empty rows.
@@ -119,6 +138,17 @@ function EquipmentList({ equipments }) {
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
    };
+
+   const changeSearchBy = (searchBy) => {
+      setSearchTerm("");
+      setSearchBy(searchBy);
+      
+   };
+
+   const onChangeSearchTerm = (searchTerm) => {
+      setSearchTerm(searchTerm);
+   };
+
    const convertSearchText = (searchBy) => {
       switch (searchBy) {
          case "name":
@@ -136,7 +166,7 @@ function EquipmentList({ equipments }) {
       }
    };
 
-   const convertStatus = (status) => {
+   const convertStatus = (status, isFromDropdown) => {
       switch (status) {
          case "new":
             return "Novo";
@@ -147,7 +177,7 @@ function EquipmentList({ equipments }) {
          case "repaired":
             return "Reparado";
          default:
-            return "Selecione o estado";
+            return (isFromDropdown ? "Selecione o estado" : '');
       }
    };
 
@@ -155,9 +185,19 @@ function EquipmentList({ equipments }) {
       [`&.${tableCellClasses.head}`]: {
          backgroundColor: "#7393B3",
          color: theme.palette.common.white,
+         width: 100,
+         maxWidth: 100,
+         overflow: "hidden",
+         textOverflow: "ellipsis",
+         borderStyle: "border-box"
       },
       [`&.${tableCellClasses.body}`]: {
          fontSize: 14,
+         width: 100,
+         maxWidth: 100,
+         overflow: "hidden",
+         textOverflow: "ellipsis",
+         borderStyle: "border-box"
       },
    }));
 
@@ -167,136 +207,160 @@ function EquipmentList({ equipments }) {
       },
    }));
 
-   return (
-      <div>
-         <InputGroup className="mb-3">
-            <DropdownButton
-               as={InputGroup.Prepend}
-               variant="outline-secondary"
-               title={`Pesquisar por ${convertSearchText(searchBy)}`}
-               id="input-group-dropdown-1"
-            >
-               <Dropdown.Item onClick={() => setSearchBy("name")}>
-                  Nome
-               </Dropdown.Item>
-               <Dropdown.Item onClick={() => setSearchBy("productNumber")}>
-                  PNC
-               </Dropdown.Item>
-               <Dropdown.Item onClick={() => setSearchBy("serialNumber")}>
-                  SN
-               </Dropdown.Item>
-               <Dropdown.Item onClick={() => setSearchBy("clientName")}>
-                  Nome do Cliente
-               </Dropdown.Item>
-               <Dropdown.Item
-                  onClick={() => {
-                     setSearchBy("status");
-                     setSearchTerm("");
-                  }}
-               >
-                  Estado
-               </Dropdown.Item>
-            </DropdownButton>
-            {searchBy === "status" ? (
+   if (loading)
+      return <TailSpin wrapperStyle={{
+         position: "absolute",
+         height: "100vh",
+         width: "100vw",
+         display: "flex",
+         alignItems: "center",
+         justifyContent: "center"
+      }} color="red" radius={"8px"} />;
+   else
+      return (
+
+         <div>
+            <InputGroup style={{ marginBottom: '2%' }}>
                <DropdownButton
-                  style={{ marginLeft: "0.25%" }}
+                  as={InputGroup.Prepend}
                   variant="outline-secondary"
-                  title={`${convertStatus(searchTerm)}`}
+                  title={`Pesquisar por ${convertSearchText(searchBy)}`}
                   id="input-group-dropdown-1"
                >
-                  <Dropdown.Item onClick={() => setSearchTerm("new")}>
-                     Novo
+                  <Dropdown.Item onClick={() => changeSearchBy("name")}>
+                     Nome
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => setSearchTerm("repairing")}>
-                     Em Reparação
+                  <Dropdown.Item onClick={() => changeSearchBy("productNumber")}>
+                     PNC
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => setSearchTerm("waiting parts")}>
-                     À Espera de Peças
+                  <Dropdown.Item onClick={() => changeSearchBy("serialNumber")}>
+                     SN
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => setSearchTerm("repaired")}>
-                     Reparado
+                  <Dropdown.Item onClick={() => changeSearchBy("clientName")}>
+                     Nome do Cliente
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                     onClick={() => {
+                        changeSearchBy("status");
+                     }}
+                  >
+                     Estado
                   </Dropdown.Item>
                </DropdownButton>
-            ) : (
-               <FormControl
-                  placeholder="Pesquise..."
-                  aria-label="Search"
-                  aria-describedby="basic-addon1"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{ marginLeft: "0.25%" }}
-               />
-            )}
-         </InputGroup>
-         <Paper sx={{ width: '100%', mb: 2 }}>
-            <TableContainer component={Paper}>
-               <Table>
-                  <TableHead>
-                     <TableRow>
-                        <StyledTableCell>Nome</StyledTableCell>
-                        <StyledTableCell>PNC</StyledTableCell>
-                        <StyledTableCell>SN</StyledTableCell>
-                        <StyledTableCell>Avaria</StyledTableCell>
-                        <StyledTableCell>Cliente</StyledTableCell>
-                        <StyledTableCell>Estado</StyledTableCell>
-                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                     {(rowsPerPage > 0
-                        ? filteredEquipments.slice(
-                           page * rowsPerPage,
-                           page * rowsPerPage + rowsPerPage
-                        )
-                        : filteredEquipments
-                     ).map((equipment) => (
-                        <StyledTableRow key={equipment.id}>
-                           <StyledTableCell>{equipment.name}</StyledTableCell>
-                           <StyledTableCell>
-                              {equipment.productNumber}
-                           </StyledTableCell>
-                           <StyledTableCell>
-                              {equipment.serialNumber}
-                           </StyledTableCell>
-                           <StyledTableCell>{equipment.breakdown}</StyledTableCell>
-                           <StyledTableCell>{equipment.client}</StyledTableCell>
-                           <StyledTableCell>
-                              {convertStatus(equipment.status)}
-                           </StyledTableCell>
-                        </StyledTableRow>
-                     ))}
-                     {emptyRows > 0 && (
-                        <TableRow style={{ height: 53 * emptyRows }}>
-                           <TableCell colSpan={6} />
+               {searchBy === "status" ? (
+                  <DropdownButton
+                     style={{ marginLeft: "0.25%" }}
+                     variant="outline-secondary"
+                     title={`${convertStatus(searchTerm, true)}`}
+                     id="input-group-dropdown-1"
+                  >
+                     <Dropdown.Item onClick={() => onChangeSearchTerm("new")}>
+                        Novo
+                     </Dropdown.Item>
+                     <Dropdown.Item onClick={() => onChangeSearchTerm("repairing")}>
+                        Em Reparação
+                     </Dropdown.Item>
+                     <Dropdown.Item onClick={() => onChangeSearchTerm("waiting parts")}>
+                        À Espera de Peças
+                     </Dropdown.Item>
+                     <Dropdown.Item onClick={() => onChangeSearchTerm("repaired")}>
+                        Reparado
+                     </Dropdown.Item>
+                  </DropdownButton>
+               ) : (
+                  <FormControl
+                     placeholder="Pesquise..."
+                     aria-label="Search"
+                     aria-describedby="basic-addon1"
+                     value={searchTerm}
+                     onChange={(e) => onChangeSearchTerm(e.target.value)}
+                     style={{ marginLeft: "0.25%" }}
+                  />
+               )}
+            </InputGroup>
+
+
+            <Paper sx={{ width: '100%', mb: 2 }}>
+               <TableContainer component={Paper}>
+                  <Table>
+                     <TableHead>
+                        <TableRow>
+                           <StyledTableCell>Nome</StyledTableCell>
+                           <StyledTableCell>PNC</StyledTableCell>
+                           <StyledTableCell>SN</StyledTableCell>
+                           <StyledTableCell>Avaria</StyledTableCell>
+                           <StyledTableCell>Cliente</StyledTableCell>
+                           <StyledTableCell>Estado</StyledTableCell>
                         </TableRow>
-                     )}
-                  </TableBody>
-               </Table>
-            </TableContainer>
-            <TablePagination
-                           rowsPerPageOptions={[
-                              10,
-                              25,
-                              { label: "All", value: -1 },
-                           ]}
-                           component="div"
-                           count={filteredEquipments.length}
-                           rowsPerPage={rowsPerPage}
-                           page={page}
-                           slotProps={{
-                              select: {
-                                 inputProps: {
-                                    "aria-label": "rows per page",
-                                 },
-                                 native: true,
-                              },
-                           }}
-                           onPageChange={handleChangePage}
-                           onRowsPerPageChange={handleChangeRowsPerPage}
-                           ActionsComponent={TablePaginationActions}
-                        />
-                        </Paper>
-      </div>
-   );
+                     </TableHead>
+                     <TableBody>
+                        {(rowsPerPage > 0
+                           ? filteredEquipments.slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
+                           )
+                           : filteredEquipments
+                        ).map((equipment) => (
+                           <StyledTableRow key={equipment.id}>
+                              <StyledTableCell>{equipment.name}</StyledTableCell>
+                              <StyledTableCell>
+                                 {equipment.productNumber}
+                              </StyledTableCell>
+                              <StyledTableCell>
+                                 {equipment.serialNumber}
+                              </StyledTableCell>
+                              <StyledTableCell>{equipment.breakdown}</StyledTableCell>
+                              <StyledTableCell>{equipment.client.name}</StyledTableCell>
+                              <StyledTableCell>
+                                 {convertStatus(equipment.status)}
+                              </StyledTableCell>
+                           </StyledTableRow>
+                        ))}
+                        {emptyRows > 0 && (
+                           <TableRow style={{ height: 53 * emptyRows }}>
+                              <TableCell colSpan={6} />
+                           </TableRow>
+                        )}
+                     </TableBody>
+                  </Table>
+               </TableContainer>
+               <TablePagination
+                  rowsPerPageOptions={[
+                     10,
+                     25,
+                     { label: "Todos", value: -1 },
+                  ]}
+                  component="div"
+                  count={filteredEquipments.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  slotProps={{
+                     select: {
+                        inputProps: {
+                           "aria-label": "Equipamentos por página",
+                           'aria-labelledby': 'rowsPage',
+                        },
+                        native: true,
+                     },
+                  }}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  ActionsComponent={TablePaginationActions}
+                  sx={{
+                     ".MuiTablePagination-displayedRows": {
+                        "marginTop": "1em",
+                        "marginBottom": "1em"
+                     },
+                     ".MuiTablePagination-selectLabel": {
+                        "marginTop": "1em",
+                        "marginBottom": "1em",
+                        display: "none"
+                     }
+                  }}
+               />
+            </Paper>
+         </div>
+      );
 }
 
 export default EquipmentList;

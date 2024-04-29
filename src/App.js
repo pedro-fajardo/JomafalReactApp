@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
 import Button from "react-bootstrap/Button";
+import { TailSpin } from "react-loader-spinner";
 import TopBar from "./components/TopBar";
 import EquipmentModal from "./components/EquipmentModal";
 import Row from "react-bootstrap/Row";
@@ -15,7 +17,7 @@ function App() {
       <div>
          <TopBar />
          <div className="card-list">
-            <Row style={{paddingBottom: '2%'}}>
+            <Row style={{ paddingBottom: '2%' }}>
                <Col><h2>Lista de Equipamentos:</h2></Col>
                <Col></Col>
                <Col></Col>
@@ -27,8 +29,9 @@ function App() {
                   <EquipmentModal isVisible={isVisible} setModalVisible={setModalVisible}></EquipmentModal>
                </Col>
             </Row>
-            
-            <EquipmentList equipments={dummyData}/>
+
+            <EquipmentList />
+         
          </div>
       </div>
    );
