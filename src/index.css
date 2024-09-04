@@ -39,6 +39,9 @@
 .viewEquipmentButton {
    flex-grow: 1;
 }
+.deleteEquipmentButton {
+   flex-grow: 1;
+}
 
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,

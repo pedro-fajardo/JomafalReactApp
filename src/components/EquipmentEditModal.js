@@ -9,11 +9,8 @@ import { Label } from "reactstrap";
 import Modal from "react-bootstrap/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
-import { MuiTelInput } from "mui-tel-input";
-import { FormControl } from "react-bootstrap";
 
-
-function EquipmentEditModal({ isEditModalVisible, setIsEditModalVisible, equipmentId }) {
+function EquipmentEditModal({ setIsToRefreshData, isEditModalVisible, setIsEditModalVisible, equipmentId }) {
    const [receivedDate, setReceivedDate] = useState(null);
    const [documentNumber, setDocumentNumber] = useState("");
    const [productNumber, setProductNumber] = useState("");
@@ -32,7 +29,6 @@ function EquipmentEditModal({ isEditModalVisible, setIsEditModalVisible, equipme
    const getEquipment = async () => {
       const { data } = await axios.get('/api/equipment/' + equipmentId + "/");
 
-      console.log("data: ", data)
       setName(data.name);
       setSerialNumber(data.serialNumber);
       setProductNumber(data.productNumber);
@@ -47,8 +43,9 @@ function EquipmentEditModal({ isEditModalVisible, setIsEditModalVisible, equipme
       setClientId(data.client.id);
    }
 
-   const updateEquipmentAndClient = async () => {
-      await axios.put("/api/equipment/" + equipmentId + "/", {
+   const updateEquipmentAndClient = async (e) => {
+      e.preventDefault();
+      const responseEquipment = await axios.put("/api/equipment/" + equipmentId + "/", {
          name: name,
          serialNumber: serialNumber,
          productNumber: productNumber,
@@ -58,13 +55,14 @@ function EquipmentEditModal({ isEditModalVisible, setIsEditModalVisible, equipme
          receivedDate: receivedDate,
          client: clientId,
          status: status,
-      })
+      });
 
-      axios.put("/api/client/" + clientId + "/", {
+      const responseClient = await axios.put("/api/client/" + clientId + "/", {
          name: clientName,
          phoneNumber: phoneNumber,
          address: address,
       }).then(() => {
+         setIsToRefreshData(true);
          closeModal();
       })
    };
@@ -120,7 +118,7 @@ function EquipmentEditModal({ isEditModalVisible, setIsEditModalVisible, equipme
                <Row>
                   <Col>
                      <Label>Nº de Telemóvel</Label>
-                     <FormControl
+                     <Form.Control
                         type="number"
                         value={phoneNumber}
                         onChange={(e) => handlePhoneNumber(e.target.value)}

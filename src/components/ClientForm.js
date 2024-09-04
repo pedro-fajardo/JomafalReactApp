@@ -1,28 +1,47 @@
 // EquipmentForm.js
 import React, { useState } from "react";
 import { Form, Button, Col, Row } from "react-bootstrap";
-import { MuiTelInput } from "mui-tel-input";
 import { Label } from "reactstrap";
 import { Spinner } from "react-bootstrap";
 import Box from "@mui/material/Box";
-import Select from 'react-select';
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
+import Select from "react-select";
 
 function ClientForm(props) {
-   const [phoneNumberDisabled, setPhoneNumberDisabled] = useState(false);
+   const [inputsDisabled, setInputsDisabled] = useState(false);
 
    const onChangeClientOption = (selectedClient) => {
-      const selectedClientElement = props.clientList.find((client) => {
-         if (client.id = selectedClient.value) {
-            return client;
-         }
-      })
+      if (selectedClient === null) {
+         props.setClientName("");
+         props.setPhoneNumber("");
+         props.setAddress("");
+         setInputsDisabled(false);
+         props.setExistingClientSelected(false);
+      } else {
+         console.log(selectedClient);
+         var selectedClientElement = props.clientList.find((client) => {
+            if (client.id === selectedClient.value) {
+               return client;
+            }
+         });
 
-      setPhoneNumberDisabled(true);
-      props.setClientName(selectedClientElement.name);
-      props.setPhoneNumber(selectedClientElement.phoneNumber);
-      props.setAddress(selectedClientElement.address);
+         props.setClientName(selectedClientElement.name);
+         props.setPhoneNumber(selectedClientElement.phoneNumber);
+         props.setAddress(selectedClientElement.address);
+         props.setClientData(selectedClientElement);
+         setInputsDisabled(true);
+         props.setExistingClientSelected(true);
+      }
+   };
+
+   const handlePhoneNumber = (value) => {
+      const max = 999999999;
+      const maxLength = max.toString().length;
+      const newVal =
+         value < max
+            ? value
+            : parseInt(value.toString().substring(0, maxLength));
+
+      props.setPhoneNumber(newVal);
    };
 
    return (
@@ -41,9 +60,13 @@ function ClientForm(props) {
             />
          </Form.Group>
          <br></br>
-         <Form.Group style={{ paddingTop: '1%', paddingBottom: "1%" }} controlId="clientName">
+         <Form.Group
+            style={{ paddingTop: "1%", paddingBottom: "1%" }}
+            controlId="clientName"
+         >
             <Form.Label>Nome</Form.Label>
             <Form.Control
+               disabled={inputsDisabled}
                type="text"
                value={props.clientName}
                onChange={(e) => props.setClientName(e.target.value)}
@@ -52,6 +75,7 @@ function ClientForm(props) {
          <Form.Group style={{ paddingBottom: "1%" }} controlId="clientAddress">
             <Form.Label>Morada</Form.Label>
             <Form.Control
+               disabled={inputsDisabled}
                type="text"
                value={props.address}
                onChange={(e) => props.setAddress(e.target.value)}
@@ -60,24 +84,12 @@ function ClientForm(props) {
          <Row>
             <Col>
                <Label>Nº de Telemóvel</Label>
-               {/*<MuiTelInput
-                  size="small"
-                  variant="outlined"
+               <Form.Control
+                  disabled={inputsDisabled}
+                  type="number"
                   value={props.phoneNumber}
-                  onChange={(value) => {props.setPhoneNumber(value)}}
-                  forceCallingCode
-                  defaultCountry="PT"
-                  disableDropdown
-                  disableFormatting
-                  inputProps={{ maxLength: 9 }}
-               ></MuiTelInput>*/}
-               <PhoneInput
-                  className="number"
-                  country={"pt"}
-                  value={props.phoneNumber}
-                  onChange={(phone) =>
-                     props.setPhoneNumber(phone)
-                  } />
+                  onChange={(e) => handlePhoneNumber(e.target.value)}
+               />
             </Col>
             <Col></Col>
             <Col></Col>

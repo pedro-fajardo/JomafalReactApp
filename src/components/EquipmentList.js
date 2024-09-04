@@ -29,6 +29,7 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import TablePagination from "@mui/material/TablePagination";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Box from "@mui/material/Box";
 
 function TablePaginationActions(props) {
@@ -326,6 +327,9 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
                                     </div>
                                     <div className="viewEquipmentButton">
                                        <Button onClick={() => { viewEquipmentOnClick(equipment.id) } }><VisibilityIcon></VisibilityIcon></Button>
+                                    </div>
+                                    <div className="deleteEquipmentButton">
+                                       <Button variant="danger" onClick={() => { viewEquipmentOnClick(equipment.id) } }><DeleteIcon></DeleteIcon></Button>
                                     </div>
                                  </div>
                                  

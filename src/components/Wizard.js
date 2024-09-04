@@ -87,12 +87,13 @@ export default function Wizard({closeModal}) {
    const [address, setAddress] = useState("");
    const [phoneNumber, setPhoneNumber] = useState("");
    const [clientName, setClientName] = useState("");
+   const [existingClientSelected, setExistingClientSelected] = useState(false);
 
    const putClient = async () => {
       await axios
          .post("/api/clients/", {
             name: clientName,
-            phoneNumber: parseInt(phoneNumber.slice(4, 14), 10),
+            phoneNumber: phoneNumber,
             address: address,
          })
          .then((response) => {
@@ -103,8 +104,10 @@ export default function Wizard({closeModal}) {
    const handleClientSubmit = async(e) => {
       setIsLoading(true);
       e.preventDefault();
-      await 
-      putClient();
+      if ( !existingClientSelected ) {
+         await
+         putClient();
+      } 
       setIsLoading(false);
       handleNext();
    };
@@ -164,9 +167,10 @@ export default function Wizard({closeModal}) {
                      setPhoneNumber={setPhoneNumber}
                      address={address}
                      setAddress={setAddress}
-                     putClient={putClient}
                      clientList={clientList}
                      clientListOptions={clientListOptions}
+                     setExistingClientSelected={setExistingClientSelected}
+                     setClientData={setClientData}
                   ></ClientForm>
                ) : (
                   <EquipmentForm

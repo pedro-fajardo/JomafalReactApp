@@ -35,7 +35,7 @@ function App() {
             </Row>
 
             <EquipmentList isToRefreshData={isToRefreshData}  setIsToRefreshData={setIsToRefreshData} setIsEditModalVisible={setIsEditModalVisible} setEditEquipmentId={setEditEquipmentId} />
-            { isEditModalVisible && ( <EquipmentEditModal isEditModalVisible={isEditModalVisible} setIsEditModalVisible={setIsEditModalVisible} equipmentId={editEquipmentId}></EquipmentEditModal>)}
+            { isEditModalVisible && ( <EquipmentEditModal setIsToRefreshData={setIsToRefreshData} isEditModalVisible={isEditModalVisible} setIsEditModalVisible={setIsEditModalVisible} equipmentId={editEquipmentId}></EquipmentEditModal>)}
          </div>
       </div>
    );
