@@ -31,6 +31,7 @@ import TablePagination from "@mui/material/TablePagination";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Box from "@mui/material/Box";
+import DeleteModal from "./DeleteModal";
 
 function TablePaginationActions(props) {
    const theme = useTheme();
@@ -108,6 +109,8 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
    const [rowsPerPage, setRowsPerPage] = React.useState(10);
    const [loading, setLoading] = useState(true);
    const [equipments, setEquipments] = useState([]);
+   const [showDeleteModal, setShowDeleteModal] = useState(false);
+   const [equipmentToDeleteId, setEquipmentToDeleteId] = useState("");
 
    const getEquipmentList = async () => {
       const { data } = await axios.get('/api/equipments');
@@ -188,7 +191,19 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
    const viewEquipmentOnClick = (equipmentId) => {
       setEditEquipmentId(equipmentId);
       setIsEditModalVisible(true);
-   }
+   };
+
+   const deleteEquipmentOnClick = (equipmentId) => {
+      setEquipmentToDeleteId(equipmentId);
+      setShowDeleteModal(true);
+   };
+
+   const handleDelete = async() => {
+      const response = await axios.delete('/api/equipment/' + equipmentToDeleteId + '/');
+
+      setIsToRefreshData(true);
+      setShowDeleteModal(false);
+   };
 
    const StyledTableCell = styled(TableCell)(({ theme }) => ({
       [`&.${tableCellClasses.head}`]: {
@@ -329,7 +344,7 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
                                        <Button onClick={() => { viewEquipmentOnClick(equipment.id) } }><VisibilityIcon></VisibilityIcon></Button>
                                     </div>
                                     <div className="deleteEquipmentButton">
-                                       <Button variant="danger" onClick={() => { viewEquipmentOnClick(equipment.id) } }><DeleteIcon></DeleteIcon></Button>
+                                       <Button variant="danger" onClick={() => { deleteEquipmentOnClick(equipment.id) } }><DeleteIcon></DeleteIcon></Button>
                                     </div>
                                  </div>
                                  
@@ -379,6 +394,7 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
                   }}
                />
             </Paper>
+            <DeleteModal showDeleteModal={showDeleteModal} handleCloseDeleteModal={() => {setShowDeleteModal(false)}} handleDelete={handleDelete}></DeleteModal>
          </div>
       );
 }
