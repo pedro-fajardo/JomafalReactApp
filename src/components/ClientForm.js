@@ -1,16 +1,47 @@
 // EquipmentForm.js
 import React, { useState } from "react";
-import { Form, Button, Dropdown, Col, Row } from "react-bootstrap";
+import { Form, Button, Col, Row } from "react-bootstrap";
 import { MuiTelInput } from "mui-tel-input";
 import { Label } from "reactstrap";
 import { Spinner } from "react-bootstrap";
 import Box from "@mui/material/Box";
-
+import Select from 'react-select';
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 function ClientForm(props) {
+   const [phoneNumberDisabled, setPhoneNumberDisabled] = useState(false);
+
+   const onChangeClientOption = (selectedClient) => {
+      const selectedClientElement = props.clientList.find((client) => {
+         if (client.id = selectedClient.value) {
+            return client;
+         }
+      })
+
+      setPhoneNumberDisabled(true);
+      props.setClientName(selectedClientElement.name);
+      props.setPhoneNumber(selectedClientElement.phoneNumber);
+      props.setAddress(selectedClientElement.address);
+   };
+
    return (
       <Form onSubmit={props.handleSubmit}>
-         <Form.Group style={{ paddingTop:'1%', paddingBottom: "1%" }} controlId="clientName">
+         <br></br>
+         <Form.Group>
+            <Form.Label>Lista de Clientes Existentes:</Form.Label>
+            <Select
+               className="basic-single"
+               classNamePrefix="select"
+               isClearable={true}
+               isSearchable={true}
+               name="clientList"
+               options={props.clientListOptions}
+               onChange={(e) => onChangeClientOption(e)}
+            />
+         </Form.Group>
+         <br></br>
+         <Form.Group style={{ paddingTop: '1%', paddingBottom: "1%" }} controlId="clientName">
             <Form.Label>Nome</Form.Label>
             <Form.Control
                type="text"
@@ -29,17 +60,24 @@ function ClientForm(props) {
          <Row>
             <Col>
                <Label>Nº de Telemóvel</Label>
-               <MuiTelInput
+               {/*<MuiTelInput
                   size="small"
                   variant="outlined"
                   value={props.phoneNumber}
-                  onChange={props.setPhoneNumber}
+                  onChange={(value) => {props.setPhoneNumber(value)}}
                   forceCallingCode
                   defaultCountry="PT"
                   disableDropdown
                   disableFormatting
                   inputProps={{ maxLength: 9 }}
-               ></MuiTelInput>
+               ></MuiTelInput>*/}
+               <PhoneInput
+                  className="number"
+                  country={"pt"}
+                  value={props.phoneNumber}
+                  onChange={(phone) =>
+                     props.setPhoneNumber(phone)
+                  } />
             </Col>
             <Col></Col>
             <Col></Col>
@@ -57,7 +95,7 @@ function ClientForm(props) {
             <Box sx={{ flex: "1 1 auto" }} />
 
             <Button disabled={props.isLoading} type="submit">
-               { props.isLoading && <Spinner as="span" animation="grow" /> }
+               {props.isLoading && <Spinner as="span" animation="grow" />}
                {props.activeStep === props.steps.length - 1 ? "Finish" : "Next"}
             </Button>
          </Box>

@@ -7,11 +7,15 @@ import EquipmentModal from "./components/EquipmentModal";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import EquipmentList from "./components/EquipmentList";
-import dummyData from "./data";
+import EquipmentEditModal from "./components/EquipmentEditModal";
 
 
 function App() {
    const [isVisible, setModalVisible] = useState(false);
+   const [isToRefreshData, setIsToRefreshData] = useState(true);
+   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+   const [editEquipmentId, setEditEquipmentId] = useState();
+
 
    return (
       <div>
@@ -26,12 +30,12 @@ function App() {
                   <Button onClick={() => setModalVisible(true)}>
                      Adicionar Equipamento
                   </Button>
-                  <EquipmentModal isVisible={isVisible} setModalVisible={setModalVisible}></EquipmentModal>
+                  <EquipmentModal isToRefreshData={isToRefreshData} setIsToRefreshData={setIsToRefreshData} isVisible={isVisible} setModalVisible={setModalVisible}></EquipmentModal>
                </Col>
             </Row>
 
-            <EquipmentList />
-         
+            <EquipmentList isToRefreshData={isToRefreshData}  setIsToRefreshData={setIsToRefreshData} setIsEditModalVisible={setIsEditModalVisible} setEditEquipmentId={setEditEquipmentId} />
+            { isEditModalVisible && ( <EquipmentEditModal isEditModalVisible={isEditModalVisible} setIsEditModalVisible={setIsEditModalVisible} equipmentId={editEquipmentId}></EquipmentEditModal>)}
          </div>
       </div>
    );

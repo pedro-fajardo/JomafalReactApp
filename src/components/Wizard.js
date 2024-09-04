@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
@@ -8,11 +8,10 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import ClientForm from "./ClientForm";
 import EquipmentForm from "./EquipmentForm";
-import { Spinner } from "react-bootstrap";
 
 const steps = ["Escolher/Criar Cliente", "Equipamento para reparação"];
 
-export default function Wizard() {
+export default function Wizard({closeModal}) {
    const [isToCreate, setIsToCreate] = useState(false);
    const [receivedDate, setReceivedDate] = useState(null);
    const [documentNumber, setDocumentNumber] = useState("");
@@ -23,9 +22,48 @@ export default function Wizard() {
    const [observations, setObservations] = useState("");
    const [status, setStatus] = useState("new");
    const [clientData, setClientData] = useState({});
+   const [clientList, setClientList] = useState([]);
+   const [clientListOptions, setClientListOptions] = useState([]);
+
+   const getClients = async () => {
+      await axios.get("/api/clients")
+      .then((response) => {
+         setClientList( (clientListToAdd) => {
+            if ( clientListToAdd !== response.data ) {
+               setClientListOptions((clientListOptionsToAdd) => {
+                  const clientListOptionsOut = [];
+
+                  response.data.forEach(client => {
+                     clientListOptionsOut.push({
+                        value: client.id,
+                        label: client.name,
+                     })
+                  });
+
+                  if ( clientListOptionsToAdd !== clientListOptionsOut) {
+                     return clientListOptionsOut;
+                  }
+                  else {
+                     return [];
+                  }
+               })
+
+               return response.data;
+            } else {
+               return clientList;
+            }
+         });
+         
+         setIsLoading(false);
+      });
+   };
+
+   useEffect(() => {
+      getClients();
+   }, []);
 
    const putEquipment = async () => {
-      await axios.post("/api/equipment", {
+      await axios.post("/api/equipments/", {
          name: name,
          serialNumber: serialNumber,
          productNumber: productNumber,
@@ -33,8 +71,11 @@ export default function Wizard() {
          observations: observations,
          documentNumber: documentNumber,
          receivedDate: receivedDate,
-         client: clientData,
+         client: clientData.id,
          status: status,
+      })
+      .then(() => {
+         closeModal();
       });
    };
 
@@ -49,19 +90,20 @@ export default function Wizard() {
 
    const putClient = async () => {
       await axios
-         .post("/api/client", {
+         .post("/api/clients/", {
             name: clientName,
             phoneNumber: parseInt(phoneNumber.slice(4, 14), 10),
             address: address,
          })
-         .then((data) => {
-            setClientData(data);
+         .then((response) => {
+            setClientData(response.data);
          });
    };
 
-   const handleClientSubmit = (e) => {
+   const handleClientSubmit = async(e) => {
       setIsLoading(true);
       e.preventDefault();
+      await 
       putClient();
       setIsLoading(false);
       handleNext();
@@ -123,6 +165,8 @@ export default function Wizard() {
                      address={address}
                      setAddress={setAddress}
                      putClient={putClient}
+                     clientList={clientList}
+                     clientListOptions={clientListOptions}
                   ></ClientForm>
                ) : (
                   <EquipmentForm
@@ -142,6 +186,7 @@ export default function Wizard() {
                      setSerialNumber={setSerialNumber}
                      observations={observations}
                      setObservations={setObservations}
+                     steps={steps}
                   ></EquipmentForm>
                )}
             </React.Fragment>

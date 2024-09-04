@@ -1,15 +1,17 @@
 // EquipmentForm.js
-import React, { useState } from "react";
+import React from "react";
 import "dayjs/locale/en-gb";
-import { Form, Button, Dropdown, Col, Row } from "react-bootstrap";
+import { Form, Button, Col, Row } from "react-bootstrap";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Label } from "reactstrap";
-
+import { Spinner } from "react-bootstrap";
+import Box from "@mui/material/Box";
+   
 function EquipmentForm(props) {
    return (
-      <Form>
+      <Form  onSubmit={props.handleSubmit}>
          <Row style={{ paddingTop: '1%', paddingBottom: "1%" }}>
             <Col>
                <Label>Data e Hora de atendimento</Label>
@@ -94,6 +96,22 @@ function EquipmentForm(props) {
                onChange={(e) => props.setObservations(e.target.value)}
             />
          </Form.Group>
+         <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+            <Button
+               color="inherit"
+               disabled={props.activeStep === 0}
+               onClick={props.handleBack}
+               sx={{ mr: 1 }}
+            >
+               Back
+            </Button>
+            <Box sx={{ flex: "1 1 auto" }} />
+
+            <Button disabled={props.isLoading} type="submit">
+               { props.isLoading && <Spinner as="span" animation="grow" /> }
+               {props.activeStep === props.steps.length - 1 ? "Finish" : "Next"}
+            </Button>
+         </Box>
       </Form>
    );
 }

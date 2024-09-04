@@ -10,6 +10,7 @@ import {
    DropdownButton,
    Dropdown,
    FormControl,
+   Button,
 } from "react-bootstrap";
 import {
    Table,
@@ -20,15 +21,14 @@ import {
    TableRow,
    Paper,
 } from "@mui/material";
-import { Row, Col } from 'react-bootstrap'
 import { tableCellClasses } from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
-import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import Box from "@mui/material/Box";
 
 function TablePaginationActions(props) {
@@ -100,7 +100,7 @@ TablePaginationActions.propTypes = {
    rowsPerPage: PropTypes.number.isRequired,
 };
 
-function EquipmentList() {
+function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisible, setEditEquipmentId}) {
    const [searchTerm, setSearchTerm] = useState("");
    const [searchBy, setSearchBy] = useState("name");
    const [page, setPage] = React.useState(0);
@@ -109,17 +109,20 @@ function EquipmentList() {
    const [equipments, setEquipments] = useState([]);
 
    const getEquipmentList = async () => {
-      const { data } = await axios.get('/api/equipment');
+      const { data } = await axios.get('/api/equipments');
       data.filter((equipment) =>
          equipment[searchBy].toLowerCase().includes(searchTerm.toLowerCase())
       );
       setEquipments(data);
       setLoading(false);
+      setIsToRefreshData(false);
    }
 
    useEffect(() => {
-      getEquipmentList();
-   }, []);
+      if ( isToRefreshData ) {
+         getEquipmentList();
+      }
+   }, [isToRefreshData]);
 
    var filteredEquipments = ( searchBy === "clientName" 
       ? equipments.filter((equipment) => equipment.client.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -180,6 +183,11 @@ function EquipmentList() {
             return (isFromDropdown ? "Selecione o estado" : '');
       }
    };
+
+   const viewEquipmentOnClick = (equipmentId) => {
+      setEditEquipmentId(equipmentId);
+      setIsEditModalVisible(true);
+   }
 
    const StyledTableCell = styled(TableCell)(({ theme }) => ({
       [`&.${tableCellClasses.head}`]: {
@@ -312,7 +320,15 @@ function EquipmentList() {
                               <StyledTableCell>{equipment.breakdown}</StyledTableCell>
                               <StyledTableCell>{equipment.client.name}</StyledTableCell>
                               <StyledTableCell>
-                                 {convertStatus(equipment.status)}
+                                 <div className="statusTableCell">
+                                    <div className="status">
+                                       {convertStatus(equipment.status)}
+                                    </div>
+                                    <div className="viewEquipmentButton">
+                                       <Button onClick={() => { viewEquipmentOnClick(equipment.id) } }><VisibilityIcon></VisibilityIcon></Button>
+                                    </div>
+                                 </div>
+                                 
                               </StyledTableCell>
                            </StyledTableRow>
                         ))}
