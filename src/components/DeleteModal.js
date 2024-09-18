@@ -5,17 +5,17 @@ const DeleteModal = ({ showDeleteModal, handleCloseDeleteModal, handleDelete }) 
   return (
     <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
       <Modal.Header closeButton>
-        <Modal.Title>Confirm Deletion</Modal.Title>
+        <Modal.Title>Confirmação de apagar</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Are you sure you want to delete this item? This action cannot be undone.
+          Tem a certeza que deseja apagar este equipamento? Após confirmar não poderá reverter esta operação.
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleCloseDeleteModal}>
-          Cancel
+          Cancelar
         </Button>
         <Button variant="danger" onClick={handleDelete}>
-          Delete
+          Apagar
         </Button>
       </Modal.Footer>
     </Modal>

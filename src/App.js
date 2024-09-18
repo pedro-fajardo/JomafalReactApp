@@ -22,12 +22,12 @@ function App() {
          <TopBar />
          <div className="card-list">
             <Row style={{ paddingBottom: '2%' }}>
-               <Col><h2>Lista de Equipamentos:</h2></Col>
+               <Col><h2>Lista de Equipamentos</h2></Col>
                <Col></Col>
                <Col></Col>
                <Col></Col>
                <Col>
-                  <Button onClick={() => setModalVisible(true)}>
+                  <Button style={{marginLeft: "42%"}} onClick={() => setModalVisible(true)}>
                      Adicionar Equipamento
                   </Button>
                   <EquipmentModal isToRefreshData={isToRefreshData} setIsToRefreshData={setIsToRefreshData} isVisible={isVisible} setModalVisible={setModalVisible}></EquipmentModal>

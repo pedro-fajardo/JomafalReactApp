@@ -26,21 +26,17 @@
    margin-top: 3%;
 }
 
-.statusTableCell {
+.actionTableCell {
    display: flex;
    align-items: center;
    text-align: center;
 }
 
-.status {
+.viewEquipmentButton {
    flex-shrink: 0;
 }
-
-.viewEquipmentButton {
-   flex-grow: 1;
-}
 .deleteEquipmentButton {
-   flex-grow: 1;
+   flex-grow: 0.5;
 }
 
 /* Chrome, Safari, Edge, Opera */

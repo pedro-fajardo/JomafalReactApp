@@ -207,21 +207,23 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
 
    const StyledTableCell = styled(TableCell)(({ theme }) => ({
       [`&.${tableCellClasses.head}`]: {
+         fontSize: 18,
          backgroundColor: "#7393B3",
          color: theme.palette.common.white,
          width: 100,
          maxWidth: 100,
          overflow: "hidden",
          textOverflow: "ellipsis",
-         borderStyle: "border-box"
+         borderStyle: "border-box",
       },
       [`&.${tableCellClasses.body}`]: {
-         fontSize: 14,
+         fontSize: 18,
          width: 100,
          maxWidth: 100,
          overflow: "hidden",
          textOverflow: "ellipsis",
-         borderStyle: "border-box"
+         borderStyle: "border-box",
+         whiteSpace: "nowrap"
       },
    }));
 
@@ -309,12 +311,13 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
                   <Table>
                      <TableHead>
                         <TableRow>
-                           <StyledTableCell>Nome</StyledTableCell>
-                           <StyledTableCell>PNC</StyledTableCell>
-                           <StyledTableCell>SN</StyledTableCell>
-                           <StyledTableCell>Avaria</StyledTableCell>
-                           <StyledTableCell>Cliente</StyledTableCell>
-                           <StyledTableCell>Estado</StyledTableCell>
+                           <StyledTableCell><strong>Nome</strong></StyledTableCell>
+                           <StyledTableCell><strong>PNC</strong></StyledTableCell>
+                           <StyledTableCell><strong>SN</strong></StyledTableCell>
+                           <StyledTableCell><strong>Avaria</strong></StyledTableCell>
+                           <StyledTableCell><strong>Cliente</strong></StyledTableCell>
+                           <StyledTableCell><strong>Estado do Equipamento</strong></StyledTableCell>
+                           <StyledTableCell><strong>Ações</strong></StyledTableCell>
                         </TableRow>
                      </TableHead>
                      <TableBody>
@@ -326,20 +329,20 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
                            : filteredEquipments
                         ).map((equipment) => (
                            <StyledTableRow key={equipment.id}>
-                              <StyledTableCell>{equipment.name}</StyledTableCell>
+                              <StyledTableCell title={equipment.name}>{equipment.name}</StyledTableCell>
                               <StyledTableCell>
                                  {equipment.productNumber}
                               </StyledTableCell>
                               <StyledTableCell>
                                  {equipment.serialNumber}
                               </StyledTableCell>
-                              <StyledTableCell>{equipment.breakdown}</StyledTableCell>
+                              <StyledTableCell title={equipment.breakdown}>{equipment.breakdown}</StyledTableCell>
                               <StyledTableCell>{equipment.client.name}</StyledTableCell>
                               <StyledTableCell>
-                                 <div className="statusTableCell">
-                                    <div className="status">
-                                       {convertStatus(equipment.status)}
-                                    </div>
+                                 {convertStatus(equipment.status)}
+                              </StyledTableCell>
+                              <StyledTableCell>
+                                 <div className="actionTableCell">
                                     <div className="viewEquipmentButton">
                                        <Button onClick={() => { viewEquipmentOnClick(equipment.id) } }><VisibilityIcon></VisibilityIcon></Button>
                                     </div>
@@ -347,7 +350,6 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
                                        <Button variant="danger" onClick={() => { deleteEquipmentOnClick(equipment.id) } }><DeleteIcon></DeleteIcon></Button>
                                     </div>
                                  </div>
-                                 
                               </StyledTableCell>
                            </StyledTableRow>
                         ))}
