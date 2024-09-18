@@ -130,7 +130,6 @@ function EquipmentEditModal({
                            aria-label="Selecionar estado"
                            onChange={(e) => setStatus(e.target.value)}
                         >
-                           <option>Selecionar Estado</option>
                            <option value="new">Novo</option>
                            <option value="repairing">Em Reparação</option>
                            <option value="waiting parts">À Espera de Peças</option>
