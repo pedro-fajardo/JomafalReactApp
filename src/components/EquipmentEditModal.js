@@ -9,6 +9,8 @@ import { Label } from "reactstrap";
 import Modal from "react-bootstrap/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import { PDFDocument } from 'pdf-lib'
+import pdf from '../pdf/Ficha de Atendimento_v5.pdf'
 
 function EquipmentEditModal({
    setIsToRefreshData,
@@ -24,11 +26,13 @@ function EquipmentEditModal({
    const [breakdown, setBreakdown] = useState("");
    const [observations, setObservations] = useState("");
    const [status, setStatus] = useState("");
+   const [warranty, setWarranty] = useState(true);
 
    const [address, setAddress] = useState("");
    const [phoneNumber, setPhoneNumber] = useState(0);
    const [clientName, setClientName] = useState("");
    const [clientId, setClientId] = useState("");
+   const [postalCode, setPostalCode] = useState("");
 
    const getEquipment = async () => {
       const { data } = await axios.get("/api/equipment/" + equipmentId + "/");
@@ -40,11 +44,13 @@ function EquipmentEditModal({
       setDocumentNumber(data.documentNumber);
       setObservations(data.observations);
       setStatus(data.status);
+      setWarranty(data.warranty);
       setReceivedDate(data.receivedDate);
       setAddress(data.client.address);
       setPhoneNumber(data.client.phoneNumber);
       setClientName(data.client.name);
       setClientId(data.client.id);
+      setPostalCode(data.client.postalCode);
    };
 
    const updateEquipmentAndClient = async (e) => {
@@ -61,6 +67,7 @@ function EquipmentEditModal({
             receivedDate: receivedDate,
             client: clientId,
             status: status,
+            warranty: warranty
          }
       );
 
@@ -69,6 +76,7 @@ function EquipmentEditModal({
             name: clientName,
             phoneNumber: phoneNumber,
             address: address,
+            postalCode: postalCode
          })
          .then(() => {
             setIsToRefreshData(true);
@@ -95,6 +103,15 @@ function EquipmentEditModal({
       setPhoneNumber(newVal);
    };
 
+   const printPDF = async () => {
+      const formPdfBytes = await fetch(pdf).then(res => res.arrayBuffer());
+      const pdfDoc = await PDFDocument.load(formPdfBytes)
+      const form = pdfDoc.getForm()
+      console.log(form)
+
+      console.log(form.getTextField("clientName"))
+   };
+
    return (
       <Modal
          size="xl"
@@ -103,12 +120,12 @@ function EquipmentEditModal({
          backdrop="static"
          aria-labelledby="example-modal-sizes-title-lg"
          centered
-         closeButton
       >
          <Modal.Header closeButton>
             <Modal.Title>Editar Equipamento/Cliente</Modal.Title>
          </Modal.Header>
          <Modal.Body>
+            <Button onClick={printPDF}>PDF</Button>
             <Form onSubmit={updateEquipmentAndClient}>
                <h3>Equipamento</h3>
                <Row style={{ paddingTop: "1%", paddingBottom: "1%" }}>
@@ -134,12 +151,13 @@ function EquipmentEditModal({
                            <option value="repairing">Em Reparação</option>
                            <option value="waiting parts">À Espera de Peças</option>
                            <option value="repaired">Reparado</option>
+                           <option value="scrap">Sucata</option>
                         </Form.Select>
                      </Form.Group>
                   </Col>
                </Row>
 
-               <Row style={{ paddingBottom: "1%" }}>
+               <Row style={{ paddingBottom: "2%" }}>
                   <Col>
                      <Form.Group controlId="productNumber">
                         <Form.Label>PNC</Form.Label>
@@ -161,6 +179,28 @@ function EquipmentEditModal({
                      </Form.Group>
                   </Col>
                </Row>
+               <Form.Group style={{ paddingBottom: "1%" }} controlId="garanty">
+                  <Form.Label>Garantia</Form.Label>
+                  <Form.Check
+                     inline
+                     label="Sim"
+                     name="group1"
+                     type="radio"
+                     id={`inline-radio-1`}
+                     checked={warranty}
+                     onChange={() => { setWarranty(true) }}
+                     style={{marginLeft: "2%"}}
+                  />
+                  <Form.Check
+                     inline
+                     label="Não"
+                     name="group1"
+                     type="radio"
+                     id={`inline-radio-2`}
+                     checked={!warranty}
+                     onChange={() => { setWarranty(false) }}
+                  />
+               </Form.Group>
                <Form.Group
                   style={{ paddingBottom: "1%" }}
                   controlId="breakdown"
@@ -218,7 +258,16 @@ function EquipmentEditModal({
                      />
                   </Col>
                   <Col></Col>
-                  <Col></Col>
+                  <Col>
+                     <Form.Group style={{ paddingBottom: "1%" }} controlId="clientPostalCode">
+                        <Form.Label>Código de Postal</Form.Label>
+                        <Form.Control
+                           type="text"
+                           value={postalCode}
+                           onChange={(e) => setPostalCode(e.target.value)}
+                        />
+                     </Form.Group>
+                  </Col>
                   <Col></Col>
                </Row>
 
@@ -258,7 +307,7 @@ function EquipmentEditModal({
                </Row>
 
                <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                  <Button type="submit">Update</Button>
+                  <Button type="submit">Guardar Alterações</Button>
                </Box>
             </Form>
          </Modal.Body>

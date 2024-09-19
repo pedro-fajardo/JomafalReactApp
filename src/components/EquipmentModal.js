@@ -2,7 +2,7 @@ import Modal from "react-bootstrap/Modal";
 import Wizard from "./Wizard";
 
 
-function EquipmentModal({isVisible, setModalVisible}) {
+function EquipmentModal({isVisible, setModalVisible, setIsToRefreshData}) {
    const closeModal = () => {
       setModalVisible(false);
    };
@@ -22,7 +22,7 @@ function EquipmentModal({isVisible, setModalVisible}) {
             </Modal.Title>
          </Modal.Header>
          <Modal.Body>
-            <Wizard closeModal={closeModal}></Wizard>
+            <Wizard setIsToRefreshData={setIsToRefreshData} closeModal={closeModal}></Wizard>
          </Modal.Body>
       </Modal>
    );

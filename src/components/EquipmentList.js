@@ -183,6 +183,8 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
             return "À espera de peças";
          case "repaired":
             return "Reparado";
+         case "scrap":
+            return "Sucata";
          default:
             return (isFromDropdown ? "Selecione o estado" : '');
       }
@@ -291,6 +293,9 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
                      </Dropdown.Item>
                      <Dropdown.Item onClick={() => onChangeSearchTerm("repaired")}>
                         Reparado
+                     </Dropdown.Item>
+                     <Dropdown.Item onClick={() => onChangeSearchTerm("scrap")}>
+                        Sucata
                      </Dropdown.Item>
                   </DropdownButton>
                ) : (

@@ -56,7 +56,7 @@ function EquipmentForm(props) {
                onChange={(e) => props.setName(e.target.value)}
             />
          </Form.Group>
-         <Row style={{ paddingBottom: "1%" }}>
+         <Row style={{ paddingBottom: "2%" }}>
             <Col>
                <Form.Group controlId="productNumber">
                   <Form.Label>PNC</Form.Label>
@@ -78,6 +78,28 @@ function EquipmentForm(props) {
                </Form.Group>
             </Col>
          </Row>
+         <Form.Group style={{ paddingBottom: "1%" }} controlId="garanty">
+            <Form.Label>Garantia</Form.Label>
+            <Form.Check
+               inline
+               label="Sim"
+               name="group1"
+               type="radio"
+               id={`inline-radio-1`}
+               checked={props.warranty}
+               onChange={() => { props.setWarranty(true) }}
+               style={{marginLeft: "2%"}}
+            />
+            <Form.Check
+               inline
+               label="Não"
+               name="group1"
+               type="radio"
+               id={`inline-radio-2`}
+               checked={!props.warranty}
+               onChange={() => { props.setWarranty(false) }}
+            />
+         </Form.Group>
          <Form.Group style={{ paddingBottom: "1%" }} controlId="breakdown">
             <Form.Label>Avaria</Form.Label>
             <Form.Control
@@ -103,13 +125,13 @@ function EquipmentForm(props) {
                onClick={props.handleBack}
                sx={{ mr: 1 }}
             >
-               Back
+               Anterior    
             </Button>
             <Box sx={{ flex: "1 1 auto" }} />
 
             <Button disabled={props.isLoading} type="submit">
                { props.isLoading && <Spinner as="span" animation="grow" /> }
-               {props.activeStep === props.steps.length - 1 ? "Finish" : "Next"}
+               { "Finalizar" }
             </Button>
          </Box>
       </Form>

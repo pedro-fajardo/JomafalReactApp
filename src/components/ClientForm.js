@@ -1,5 +1,5 @@
 // EquipmentForm.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Button, Col, Row } from "react-bootstrap";
 import { Label } from "reactstrap";
 import { Spinner } from "react-bootstrap";
@@ -7,17 +7,14 @@ import Box from "@mui/material/Box";
 import Select from "react-select";
 
 function ClientForm(props) {
-   const [inputsDisabled, setInputsDisabled] = useState(false);
-
    const onChangeClientOption = (selectedClient) => {
       if (selectedClient === null) {
          props.setClientName("");
          props.setPhoneNumber("");
          props.setAddress("");
-         setInputsDisabled(false);
+         props.setInputsDisabled(false);
          props.setExistingClientSelected(false);
       } else {
-         console.log(selectedClient);
          var selectedClientElement = props.clientList.find((client) => {
             if (client.id === selectedClient.value) {
                return client;
@@ -28,7 +25,8 @@ function ClientForm(props) {
          props.setPhoneNumber(selectedClientElement.phoneNumber);
          props.setAddress(selectedClientElement.address);
          props.setClientData(selectedClientElement);
-         setInputsDisabled(true);
+         props.setSelectedClientOption({value: selectedClientElement.id, label: selectedClientElement.name});
+         props.setInputsDisabled(true);
          props.setExistingClientSelected(true);
       }
    };
@@ -49,24 +47,39 @@ function ClientForm(props) {
          <br></br>
          <Form.Group>
             <Form.Label>Lista de Clientes Existentes:</Form.Label>
-            <Select
-               className="basic-single"
-               classNamePrefix="select"
-               isClearable={true}
-               isSearchable={true}
-               name="clientList"
-               options={props.clientListOptions}
-               onChange={(e) => onChangeClientOption(e)}
-            />
+            { props.selectedClientOption.value !== null ?
+               <Select
+                  defaultValue={props.selectedClientOption}
+                  className="basic-single"
+                  classNamePrefix="select"
+                  isClearable={true}
+                  isSearchable={true}
+                  name="clientList"
+                  placeholder="Selecione..."
+                  options={props.clientListOptions}
+                  onChange={(e) => onChangeClientOption(e)}
+               />
+               :
+               <Select
+                  className="basic-single"
+                  classNamePrefix="select"
+                  isClearable={true}
+                  isSearchable={true}
+                  name="clientList"
+                  placeholder="Selecione..."
+                  options={props.clientListOptions}
+                  onChange={(e) => onChangeClientOption(e)}
+               />
+            }
          </Form.Group>
-         <br></br>
+         <hr></hr>
          <Form.Group
             style={{ paddingTop: "1%", paddingBottom: "1%" }}
             controlId="clientName"
          >
             <Form.Label>Nome</Form.Label>
             <Form.Control
-               disabled={inputsDisabled}
+               disabled={props.inputsDisabled}
                type="text"
                value={props.clientName}
                onChange={(e) => props.setClientName(e.target.value)}
@@ -75,7 +88,7 @@ function ClientForm(props) {
          <Form.Group style={{ paddingBottom: "1%" }} controlId="clientAddress">
             <Form.Label>Morada</Form.Label>
             <Form.Control
-               disabled={inputsDisabled}
+               disabled={props.inputsDisabled}
                type="text"
                value={props.address}
                onChange={(e) => props.setAddress(e.target.value)}
@@ -83,16 +96,28 @@ function ClientForm(props) {
          </Form.Group>
          <Row>
             <Col>
-               <Label>Nº de Telemóvel</Label>
-               <Form.Control
-                  disabled={inputsDisabled}
-                  type="number"
-                  value={props.phoneNumber}
-                  onChange={(e) => handlePhoneNumber(e.target.value)}
-               />
+               <Form.Group style={{ paddingBottom: "1%" }} controlId="clientPhoneNumber">
+                  <Form.Label>Nº de Telemóvel</Form.Label>
+                  <Form.Control
+                     disabled={props.inputsDisabled}
+                     type="number"
+                     value={props.phoneNumber}
+                     onChange={(e) => handlePhoneNumber(e.target.value)}
+                  />
+               </Form.Group>
             </Col>
             <Col></Col>
-            <Col></Col>
+            <Col>
+               <Form.Group style={{ paddingBottom: "1%" }} controlId="clientPostalCode">
+                  <Form.Label>Código de Postal</Form.Label>
+                  <Form.Control
+                     disabled={props.inputsDisabled}
+                     type="text"
+                     value={props.postalCode}
+                     onChange={(e) => props.setPostalCode(e.target.value)}
+                  />
+               </Form.Group>
+            </Col>
             <Col></Col>
          </Row>
          <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
@@ -102,13 +127,13 @@ function ClientForm(props) {
                onClick={props.handleBack}
                sx={{ mr: 1 }}
             >
-               Back
+               Anterior
             </Button>
             <Box sx={{ flex: "1 1 auto" }} />
 
             <Button disabled={props.isLoading} type="submit">
                {props.isLoading && <Spinner as="span" animation="grow" />}
-               {props.activeStep === props.steps.length - 1 ? "Finish" : "Next"}
+               {props.activeStep === props.steps.length - 1 ? "Finalizar" : "Proximo"}
             </Button>
          </Box>
       </Form>

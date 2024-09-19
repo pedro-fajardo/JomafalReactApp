@@ -11,8 +11,7 @@ import EquipmentForm from "./EquipmentForm";
 
 const steps = ["Escolher/Criar Cliente", "Equipamento para reparação"];
 
-export default function Wizard({closeModal}) {
-   const [isToCreate, setIsToCreate] = useState(false);
+export default function Wizard({closeModal, setIsToRefreshData}) {
    const [receivedDate, setReceivedDate] = useState(null);
    const [documentNumber, setDocumentNumber] = useState("");
    const [productNumber, setProductNumber] = useState("");
@@ -21,9 +20,7 @@ export default function Wizard({closeModal}) {
    const [breakdown, setBreakdown] = useState("");
    const [observations, setObservations] = useState("");
    const [status, setStatus] = useState("new");
-   const [clientData, setClientData] = useState({});
-   const [clientList, setClientList] = useState([]);
-   const [clientListOptions, setClientListOptions] = useState([]);
+   const [warranty, setWarranty] = useState(true);
 
    const getClients = async () => {
       await axios.get("/api/clients")
@@ -73,9 +70,11 @@ export default function Wizard({closeModal}) {
          receivedDate: receivedDate,
          client: clientData.id,
          status: status,
+         warranty: warranty
       })
       .then(() => {
          closeModal();
+         setIsToRefreshData(true);
       });
    };
 
@@ -87,7 +86,13 @@ export default function Wizard({closeModal}) {
    const [address, setAddress] = useState("");
    const [phoneNumber, setPhoneNumber] = useState("");
    const [clientName, setClientName] = useState("");
+   const [postalCode, setPostalCode] = useState("");
    const [existingClientSelected, setExistingClientSelected] = useState(false);
+   const [inputsDisabled, setInputsDisabled] = useState(false);
+   const [selectedClientOption, setSelectedClientOption] = useState({ value: null});
+   const [clientData, setClientData] = useState({});
+   const [clientList, setClientList] = useState([]);
+   const [clientListOptions, setClientListOptions] = useState([]);
 
    const putClient = async () => {
       await axios
@@ -95,6 +100,7 @@ export default function Wizard({closeModal}) {
             name: clientName,
             phoneNumber: phoneNumber,
             address: address,
+            postalCode: postalCode
          })
          .then((response) => {
             setClientData(response.data);
@@ -154,7 +160,6 @@ export default function Wizard({closeModal}) {
             <React.Fragment>
                {activeStep === 0 ? (
                   <ClientForm
-                     isToCreate={isToCreate}
                      handleSubmit={handleClientSubmit}
                      isLoading={isLoading}
                      activeStep={activeStep}
@@ -167,15 +172,22 @@ export default function Wizard({closeModal}) {
                      setPhoneNumber={setPhoneNumber}
                      address={address}
                      setAddress={setAddress}
+                     postalCode={postalCode}
+                     setPostalCode={setPostalCode}
                      clientList={clientList}
                      clientListOptions={clientListOptions}
                      setExistingClientSelected={setExistingClientSelected}
+                     clientData={clientData}
                      setClientData={setClientData}
+                     inputsDisabled={inputsDisabled}
+                     setInputsDisabled={setInputsDisabled}
+                     selectedClientOption={selectedClientOption}
+                     setSelectedClientOption={setSelectedClientOption}
                   ></ClientForm>
                ) : (
                   <EquipmentForm
-                     isToCreate={isToCreate}
                      handleSubmit={handleEquipmentSubmit}
+                     handleBack={handleBack}
                      receivedDate={receivedDate}
                      setReceivedDate={setReceivedDate}
                      breakdown={breakdown}
@@ -190,6 +202,8 @@ export default function Wizard({closeModal}) {
                      setSerialNumber={setSerialNumber}
                      observations={observations}
                      setObservations={setObservations}
+                     warranty={warranty}
+                     setWarranty={setWarranty}
                      steps={steps}
                   ></EquipmentForm>
                )}
