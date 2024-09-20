@@ -11,6 +11,7 @@ import Box from "@mui/material/Box";
 import axios from "axios";
 import { PDFDocument } from 'pdf-lib'
 import pdf from '../pdf/Ficha de Atendimento_v5.pdf'
+import PrintIcon from '@mui/icons-material/Print';
 
 function EquipmentEditModal({
    setIsToRefreshData,
@@ -107,9 +108,42 @@ function EquipmentEditModal({
       const formPdfBytes = await fetch(pdf).then(res => res.arrayBuffer());
       const pdfDoc = await PDFDocument.load(formPdfBytes)
       const form = pdfDoc.getForm()
-      console.log(form)
 
-      console.log(form.getTextField("clientName"))
+      const receivedDateConverted = new Date(receivedDate);
+
+      form.getTextField("clientName").setText(clientName);
+      form.getTextField("clientAdress").setText(address);
+      form.getTextField("clientPostalCode").setText(postalCode);
+      form.getTextField("clientPhone").setText(""+phoneNumber);
+      form.getTextField("equipmentPNC").setText(""+productNumber);
+      form.getTextField("equipmentName").setText(name);
+      form.getTextField("equipmentSerialNumber").setText(""+serialNumber);
+      form.getTextField("equipmentBreakdown").setText(breakdown);
+      form.getTextField("equipmentObservations").setText(observations);
+      form.getTextField("documentNumber").setText(""+documentNumber);
+      form.getTextField("year").setText("" + receivedDateConverted.getFullYear());
+      form.getTextField("month").setText("" + receivedDateConverted.getMonth());
+      form.getTextField("day").setText("" + receivedDateConverted.getDate());
+      form.getTextField("hour").setText("" + receivedDateConverted.getHours());
+      form.getTextField("minute").setText("" + receivedDateConverted.getMinutes());
+
+      if (warranty) {
+         form.getCheckBox("equipmentGarantyYes").check();
+      }
+      else {
+         form.getCheckBox("equipmentGarantyNo").check();
+      }
+
+      form.flatten();
+
+      const pdfBytes = await pdfDoc.save()
+      const blob = new Blob([pdfBytes]);
+      const fileUrl = window.URL.createObjectURL(blob);
+
+      let alink = document.createElement("a");
+      alink.href = fileUrl;
+      alink.download = "Ficha de Atendimento_v5.pdf";
+      alink.click();
    };
 
    return (
@@ -125,9 +159,19 @@ function EquipmentEditModal({
             <Modal.Title>Editar Equipamento/Cliente</Modal.Title>
          </Modal.Header>
          <Modal.Body>
-            <Button onClick={printPDF}>PDF</Button>
+            
             <Form onSubmit={updateEquipmentAndClient}>
-               <h3>Equipamento</h3>
+               <Row>
+                  <Col><h3>Equipamento</h3></Col>
+                  <Col></Col>
+                  <Col></Col>
+                  <Col></Col>
+                  <Col></Col>
+                  <Col></Col>
+                  <Col></Col>
+                  <Col></Col>
+                  <Col><Button variant="danger" onClick={printPDF}> <PrintIcon></PrintIcon><b> PDF</b> </Button></Col>
+               </Row>
                <Row style={{ paddingTop: "1%", paddingBottom: "1%" }}>
                   <Col>
                      <Form.Group controlId="name">

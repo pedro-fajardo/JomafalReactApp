@@ -117,6 +117,7 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
       data.filter((equipment) =>
          equipment[searchBy].toLowerCase().includes(searchTerm.toLowerCase())
       );
+      data.sort((a, b) => (b.id - a.id));
       setEquipments(data);
       setLoading(false);
       setIsToRefreshData(false);

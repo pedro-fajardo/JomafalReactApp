@@ -27,8 +27,8 @@ function App() {
                <Col></Col>
                <Col></Col>
                <Col>
-                  <Button style={{marginLeft: "42%"}} onClick={() => setModalVisible(true)}>
-                     Adicionar Equipamento
+                  <Button style={{marginLeft: "35%"}} onClick={() => setModalVisible(true)}>
+                     <b>+ Adicionar Equipamento</b>
                   </Button>
                   <EquipmentModal setIsToRefreshData={setIsToRefreshData} isVisible={isVisible} setModalVisible={setModalVisible}></EquipmentModal>
                </Col>
