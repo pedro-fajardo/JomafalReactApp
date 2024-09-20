@@ -12,6 +12,7 @@ function ClientForm(props) {
          props.setClientName("");
          props.setPhoneNumber("");
          props.setAddress("");
+         props.setPostalCode("");
          props.setInputsDisabled(false);
          props.setExistingClientSelected(false);
       } else {
@@ -24,6 +25,7 @@ function ClientForm(props) {
          props.setClientName(selectedClientElement.name);
          props.setPhoneNumber(selectedClientElement.phoneNumber);
          props.setAddress(selectedClientElement.address);
+         props.setPostalCode(selectedClientElement.postalCode);
          props.setClientData(selectedClientElement);
          props.setSelectedClientOption({value: selectedClientElement.id, label: selectedClientElement.name});
          props.setInputsDisabled(true);
