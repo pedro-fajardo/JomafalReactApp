@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
-import axios from 'axios';
+import { useState } from "react";
 import Button from "react-bootstrap/Button";
-import { TailSpin } from "react-loader-spinner";
 import TopBar from "./components/TopBar";
 import EquipmentModal from "./components/EquipmentModal";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import EquipmentList from "./components/EquipmentList";
 import EquipmentEditModal from "./components/EquipmentEditModal";
+import ClientList from "./components/ClientList";
 
 
 function App() {
@@ -15,27 +14,45 @@ function App() {
    const [isToRefreshData, setIsToRefreshData] = useState(true);
    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
    const [editEquipmentId, setEditEquipmentId] = useState();
+   const [selectedTab, setSelectedTab] = useState("equipments");
+
+   const setSelectedTabHandler = (selectedTab) => {
+      setSelectedTab(selectedTab);
+      setIsToRefreshData(true);
+   }
 
 
    return (
       <div>
-         <TopBar />
+         <TopBar selectedTab={selectedTab} setSelectedTab={setSelectedTabHandler}/>
          <div className="card-list">
             <Row style={{ paddingBottom: '2%' }}>
-               <Col><h2>Lista de Equipamentos</h2></Col>
+               <Col>
+               { selectedTab === "equipments" ? 
+                  <h2>Lista de Equipamentos</h2>
+                  :
+                  <h2>Lista de Clientes</h2>
+               }
+               </Col>
                <Col></Col>
                <Col></Col>
                <Col></Col>
                <Col>
-                  <Button style={{marginLeft: "35%"}} onClick={() => setModalVisible(true)}>
+                  { selectedTab === "equipments" && (<div><Button style={{marginLeft: "35%"}} onClick={() => setModalVisible(true)}>
                      <b>+ Adicionar Equipamento</b>
                   </Button>
-                  <EquipmentModal setIsToRefreshData={setIsToRefreshData} isVisible={isVisible} setModalVisible={setModalVisible}></EquipmentModal>
+                  <EquipmentModal setIsToRefreshData={setIsToRefreshData} isVisible={isVisible} setModalVisible={setModalVisible}></EquipmentModal></div>)}
                </Col>
             </Row>
 
-            <EquipmentList isToRefreshData={isToRefreshData}  setIsToRefreshData={setIsToRefreshData} setIsEditModalVisible={setIsEditModalVisible} setEditEquipmentId={setEditEquipmentId} />
-            { isEditModalVisible && ( <EquipmentEditModal setIsToRefreshData={setIsToRefreshData} isEditModalVisible={isEditModalVisible} setIsEditModalVisible={setIsEditModalVisible} equipmentId={editEquipmentId}></EquipmentEditModal>)}
+            { selectedTab === "equipments" ? 
+            <div>
+               <EquipmentList isToRefreshData={isToRefreshData}  setIsToRefreshData={setIsToRefreshData} setIsEditModalVisible={setIsEditModalVisible} setEditEquipmentId={setEditEquipmentId} />
+               { isEditModalVisible && ( <EquipmentEditModal setIsToRefreshData={setIsToRefreshData} isEditModalVisible={isEditModalVisible} setIsEditModalVisible={setIsEditModalVisible} equipmentId={editEquipmentId}></EquipmentEditModal>)}
+            </div>
+            :
+            <div><ClientList isToRefreshData={isToRefreshData}  setIsToRefreshData={setIsToRefreshData}/></div>
+            }
          </div>
       </div>
    );
