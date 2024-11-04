@@ -24,34 +24,41 @@ function App() {
 
    return (
       <div>
-         <TopBar selectedTab={selectedTab} setSelectedTab={setSelectedTabHandler}/>
+         <TopBar selectedTab={selectedTab} setSelectedTab={setSelectedTabHandler} />
          <div className="card-list">
-            <Row style={{ paddingBottom: '2%' }}>
-               <Col>
-               { selectedTab === "equipments" ? 
-                  <h2>Lista de Equipamentos</h2>
-                  :
-                  <h2>Lista de Clientes</h2>
-               }
-               </Col>
-               <Col></Col>
-               <Col></Col>
-               <Col></Col>
-               <Col>
-                  { selectedTab === "equipments" && (<div><Button style={{marginLeft: "35%"}} onClick={() => setModalVisible(true)}>
-                     <b>+ Adicionar Equipamento</b>
-                  </Button>
-                  <EquipmentModal setIsToRefreshData={setIsToRefreshData} isVisible={isVisible} setModalVisible={setModalVisible}></EquipmentModal></div>)}
-               </Col>
-            </Row>
-
-            { selectedTab === "equipments" ? 
-            <div>
-               <EquipmentList isToRefreshData={isToRefreshData}  setIsToRefreshData={setIsToRefreshData} setIsEditModalVisible={setIsEditModalVisible} setEditEquipmentId={setEditEquipmentId} />
-               { isEditModalVisible && ( <EquipmentEditModal setIsToRefreshData={setIsToRefreshData} isEditModalVisible={isEditModalVisible} setIsEditModalVisible={setIsEditModalVisible} equipmentId={editEquipmentId}></EquipmentEditModal>)}
+            <div className="flex flex-row pb-2 w-full">
+               <div className="flex flex-col w-1/2"> {/* Align to the start */}
+                  <div className="flex flex-row justify-start">
+                     {selectedTab === "equipments" ? (
+                        <h2>Lista de Equipamentos</h2>
+                     ) : (
+                        <h2>Lista de Clientes</h2>
+                     )}
+                  </div>
+               </div>
+               <div className="flex flex-col w-1/2"> {/* Align to the end */}
+                  {selectedTab === "equipments" && (
+                     <div className="flex flex-row justify-end">
+                        <Button style={{ marginLeft: "auto" }} onClick={() => setModalVisible(true)}>
+                           <b>+ Adicionar Equipamento</b>
+                        </Button>
+                        <EquipmentModal
+                           setIsToRefreshData={setIsToRefreshData}
+                           isVisible={isVisible}
+                           setModalVisible={setModalVisible}
+                        />
+                     </div>
+                  )}
+               </div>
             </div>
-            :
-            <div><ClientList isToRefreshData={isToRefreshData}  setIsToRefreshData={setIsToRefreshData}/></div>
+
+            {selectedTab === "equipments" ?
+               <div>
+                  <EquipmentList isToRefreshData={isToRefreshData} setIsToRefreshData={setIsToRefreshData} setIsEditModalVisible={setIsEditModalVisible} setEditEquipmentId={setEditEquipmentId} />
+                  {isEditModalVisible && (<EquipmentEditModal setIsToRefreshData={setIsToRefreshData} isEditModalVisible={isEditModalVisible} setIsEditModalVisible={setIsEditModalVisible} equipmentId={editEquipmentId}></EquipmentEditModal>)}
+               </div>
+               :
+               <div><ClientList isToRefreshData={isToRefreshData} setIsToRefreshData={setIsToRefreshData} /></div>
             }
          </div>
       </div>

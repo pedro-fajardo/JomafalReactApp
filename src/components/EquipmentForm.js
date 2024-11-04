@@ -37,6 +37,7 @@ function EquipmentForm(props) {
                >
                   <Form.Label>Documento Nº</Form.Label>
                   <Form.Control
+                     className="border-2"
                      type="text"
                      value={props.documentNumber}
                      onChange={(e) => props.setDocumentNumber(e.target.value)}
@@ -51,6 +52,7 @@ function EquipmentForm(props) {
          <Form.Group style={{ paddingBottom: "1%" }} controlId="name">
             <Form.Label>Nome</Form.Label>
             <Form.Control
+               className="border-2"
                type="text"
                value={props.name}
                onChange={(e) => props.setName(e.target.value)}
@@ -61,6 +63,7 @@ function EquipmentForm(props) {
                <Form.Group controlId="productNumber">
                   <Form.Label>PNC</Form.Label>
                   <Form.Control
+                     className="border-2"
                      type="text"
                      value={props.productNumber}
                      onChange={(e) => props.setProductNumber(e.target.value)}
@@ -71,6 +74,7 @@ function EquipmentForm(props) {
                <Form.Group controlId="serialNumber">
                   <Form.Label>SN</Form.Label>
                   <Form.Control
+                     className="border-2"
                      type="text"
                      value={props.serialNumber}
                      onChange={(e) => props.setSerialNumber(e.target.value)}
@@ -100,9 +104,34 @@ function EquipmentForm(props) {
                onChange={() => { props.setWarranty(false) }}
             />
          </Form.Group>
+         <Row style={{ paddingBottom: "2%" }}>
+            <Col>
+               <Form.Group controlId="receiptNumber">
+                  <Form.Label>Nº Fatura</Form.Label>
+                  <Form.Control
+                     className="border-2"
+                     type="text"
+                     value={props.receiptNumber}
+                     onChange={(e) => props.setReceiptNumber(e.target.value)}
+                  />
+               </Form.Group>
+            </Col>
+            <Col>
+               <Form.Group controlId="warrantyDate">
+                  <Form.Label>Data</Form.Label>
+                  <Form.Control
+                     className="border-2"
+                     type="date"
+                     value={props.warrantyDate}
+                     onChange={(e) => props.setWarrantyDate(e.target.value)}
+                  />
+               </Form.Group>
+            </Col>
+         </Row>
          <Form.Group style={{ paddingBottom: "1%" }} controlId="breakdown">
             <Form.Label>Avaria</Form.Label>
             <Form.Control
+               className="border-2"
                as="textarea"
                rows={4}
                value={props.breakdown}
@@ -112,6 +141,7 @@ function EquipmentForm(props) {
          <Form.Group controlId="observations">
             <Form.Label>Observações</Form.Label>
             <Form.Control
+               className="border-2"
                as="textarea"
                rows={2}
                value={props.observations}

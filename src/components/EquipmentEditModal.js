@@ -115,24 +115,25 @@ function EquipmentEditModal({
       form.getTextField("clientAdress").setText(address);
       form.getTextField("clientPostalCode").setText(postalCode);
       form.getTextField("clientPhone").setText(""+phoneNumber);
+      //form.getTextField("clientNif").setText(""+nif);
+      //form.getTextField("clientNumber").setText(""+clientNumber);
       form.getTextField("equipmentPNC").setText(""+productNumber);
       form.getTextField("equipmentName").setText(name);
       form.getTextField("equipmentSerialNumber").setText(""+serialNumber);
       form.getTextField("equipmentBreakdown").setText(breakdown);
       form.getTextField("equipmentObservations").setText(observations);
       form.getTextField("documentNumber").setText(""+documentNumber);
-      form.getTextField("year").setText("" + receivedDateConverted.getFullYear());
-      form.getTextField("month").setText("" + receivedDateConverted.getMonth());
-      form.getTextField("day").setText("" + receivedDateConverted.getDate());
-      form.getTextField("hour").setText("" + receivedDateConverted.getHours());
-      form.getTextField("minute").setText("" + receivedDateConverted.getMinutes());
+      form.getTextField("date").setText(receivedDateConverted.getDate() + "/" + receivedDateConverted.getMonth() + "/" + receivedDateConverted.getFullYear() + " " + + receivedDateConverted.getHours() + ":" + receivedDateConverted.getMinutes());
 
       if (warranty) {
-         form.getCheckBox("equipmentGarantyYes").check();
+         form.getCheckBox("equipmentWarrantyYes").check();
       }
       else {
-         form.getCheckBox("equipmentGarantyNo").check();
+         form.getCheckBox("equipmentWarrantyNo").check();
       }
+
+      //form.getTextField("equipmentReceiptNumber").setText(""+equipmentReceiptNumber);
+      //form.getTextField("equipmentWarrantyDate").setText(""+equipmentWarrantyDate);
 
       form.flatten();
 
@@ -142,7 +143,7 @@ function EquipmentEditModal({
 
       let alink = document.createElement("a");
       alink.href = fileUrl;
-      alink.download = "Ficha de Atendimento_v5.pdf";
+      alink.download = `Ficha de Atendimento ${clientName}.pdf`;
       alink.click();
    };
 
@@ -195,7 +196,7 @@ function EquipmentEditModal({
                            <option value="repairing">Em Reparação</option>
                            <option value="waiting parts">À Espera de Peças</option>
                            <option value="repaired">Reparado</option>
-                           <option value="scrap">Sucata</option>
+                           <option value="recycle">Reciclagem</option>
                         </Form.Select>
                      </Form.Group>
                   </Col>

@@ -21,6 +21,8 @@ export default function Wizard({closeModal, setIsToRefreshData}) {
    const [observations, setObservations] = useState("");
    const [status, setStatus] = useState("new");
    const [warranty, setWarranty] = useState(true);
+   const [receiptNumber, setReceiptNumber] = useState("");
+   const [warrantyDate, setWarrantyDate] = useState(null);
 
    const getClients = async () => {
       await axios.get("/api/clients")
@@ -70,7 +72,9 @@ export default function Wizard({closeModal, setIsToRefreshData}) {
          receivedDate: receivedDate,
          client: clientData.id,
          status: status,
-         warranty: warranty
+         warranty: warranty,
+         warrantyDate: warrantyDate,
+         receiptNumber: receiptNumber,
       })
       .then(() => {
          closeModal();
@@ -87,6 +91,8 @@ export default function Wizard({closeModal, setIsToRefreshData}) {
    const [phoneNumber, setPhoneNumber] = useState("");
    const [clientName, setClientName] = useState("");
    const [postalCode, setPostalCode] = useState("");
+   const [nif, setNif] = useState("");
+   const [clientNumber, setClientNumber] = useState("");
    const [existingClientSelected, setExistingClientSelected] = useState(false);
    const [inputsDisabled, setInputsDisabled] = useState(false);
    const [selectedClientOption, setSelectedClientOption] = useState({ value: null});
@@ -100,7 +106,9 @@ export default function Wizard({closeModal, setIsToRefreshData}) {
             name: clientName,
             phoneNumber: phoneNumber,
             address: address,
-            postalCode: postalCode
+            postalCode: postalCode,
+            nif: nif,
+            clientNumber: clientNumber,
          })
          .then((response) => {
             setClientData(response.data);
@@ -174,6 +182,10 @@ export default function Wizard({closeModal, setIsToRefreshData}) {
                      setAddress={setAddress}
                      postalCode={postalCode}
                      setPostalCode={setPostalCode}
+                     nif={nif}
+                     setNif={setNif}
+                     clientNumber={clientNumber}
+                     setClientNumber={setClientNumber}
                      clientList={clientList}
                      clientListOptions={clientListOptions}
                      setExistingClientSelected={setExistingClientSelected}
@@ -204,6 +216,10 @@ export default function Wizard({closeModal, setIsToRefreshData}) {
                      setObservations={setObservations}
                      warranty={warranty}
                      setWarranty={setWarranty}
+                     warrantyDate={warrantyDate}
+                     setWarrantyDate={setWarrantyDate}
+                     receiptNumber={receiptNumber}
+                     setReceiptNumber={setReceiptNumber}
                      steps={steps}
                   ></EquipmentForm>
                )}

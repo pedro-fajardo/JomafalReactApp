@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* override bootstrap navbar colors */
 .navbar,
 .navbar-default {

@@ -26,6 +26,8 @@ function ClientForm(props) {
          props.setPhoneNumber(selectedClientElement.phoneNumber);
          props.setAddress(selectedClientElement.address);
          props.setPostalCode(selectedClientElement.postalCode);
+         props.setNif(selectedClientElement.nif);
+         props.setClientNumber(selectedClientElement.clientNumber);
          props.setClientData(selectedClientElement);
          props.setSelectedClientOption({value: selectedClientElement.id, label: selectedClientElement.name});
          props.setInputsDisabled(true);
@@ -52,7 +54,7 @@ function ClientForm(props) {
             { props.selectedClientOption.value !== null ?
                <Select
                   defaultValue={props.selectedClientOption}
-                  className="basic-single"
+                  className="basic-single border-2 rounded-md"
                   classNamePrefix="select"
                   isClearable={true}
                   isSearchable={true}
@@ -63,7 +65,7 @@ function ClientForm(props) {
                />
                :
                <Select
-                  className="basic-single"
+                  className="basic-single border-2 rounded-md"
                   classNamePrefix="select"
                   isClearable={true}
                   isSearchable={true}
@@ -81,6 +83,7 @@ function ClientForm(props) {
          >
             <Form.Label>Nome</Form.Label>
             <Form.Control
+               className="border-2"
                disabled={props.inputsDisabled}
                type="text"
                value={props.clientName}
@@ -90,6 +93,7 @@ function ClientForm(props) {
          <Form.Group style={{ paddingBottom: "1%" }} controlId="clientAddress">
             <Form.Label>Morada</Form.Label>
             <Form.Control
+               className="border-2"
                disabled={props.inputsDisabled}
                type="text"
                value={props.address}
@@ -101,6 +105,7 @@ function ClientForm(props) {
                <Form.Group style={{ paddingBottom: "1%" }} controlId="clientPhoneNumber">
                   <Form.Label>Nº de Telemóvel</Form.Label>
                   <Form.Control
+                     className="border-2"
                      disabled={props.inputsDisabled}
                      type="number"
                      value={props.phoneNumber}
@@ -113,10 +118,39 @@ function ClientForm(props) {
                <Form.Group style={{ paddingBottom: "1%" }} controlId="clientPostalCode">
                   <Form.Label>Código de Postal</Form.Label>
                   <Form.Control
+                     className="border-2"
                      disabled={props.inputsDisabled}
                      type="text"
                      value={props.postalCode}
                      onChange={(e) => props.setPostalCode(e.target.value)}
+                  />
+               </Form.Group>
+            </Col>
+            <Col></Col>
+         </Row>
+         <Row className="py-2">
+            <Col>
+               <Form.Group style={{ paddingBottom: "1%" }} controlId="clientNif">
+                  <Form.Label>NIF</Form.Label>
+                  <Form.Control
+                     className="border-2"
+                     disabled={props.inputsDisabled}
+                     type="number"
+                     value={props.nif}
+                     onChange={(e) => props.setNif(e.target.value)}
+                  />
+               </Form.Group>
+            </Col>
+            <Col></Col>
+            <Col>
+               <Form.Group style={{ paddingBottom: "1%" }} controlId="clientNumber">
+                  <Form.Label>Nº Cliente Jomafal</Form.Label>
+                  <Form.Control
+                     className="border-2"
+                     disabled={props.inputsDisabled}
+                     type="text"
+                     value={props.clientNumber}
+                     onChange={(e) => props.setClientNumber(e.target.value)}
                   />
                </Form.Group>
             </Col>

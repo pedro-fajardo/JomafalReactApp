@@ -184,8 +184,8 @@ function EquipmentList({isToRefreshData, setIsToRefreshData, setIsEditModalVisib
             return "À espera de peças";
          case "repaired":
             return "Reparado";
-         case "scrap":
-            return "Sucata";
+         case "recycle":
+            return "Reciclagem";
          default:
             return (isFromDropdown ? "Selecione o estado" : '');
       }
