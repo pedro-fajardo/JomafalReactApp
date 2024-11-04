@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import {
    InputGroup,
    FormControl,
+   Button
 } from "react-bootstrap";
 import {
    Table,
@@ -26,6 +27,9 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import TablePagination from "@mui/material/TablePagination";
 import Box from "@mui/material/Box";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ClientDetail from "./ClientDetail";
 
 function TablePaginationActions(props) {
    const theme = useTheme();
@@ -102,6 +106,9 @@ function ClientList({isToRefreshData, setIsToRefreshData}) {
    const [rowsPerPage, setRowsPerPage] = React.useState(10);
    const [loading, setLoading] = useState(true);
    const [clients, setClients] = useState([]);
+   const [showDeleteModal, setShowDeleteModal] = useState(false);
+   const [isModalVisible, setIsModalVisible] = useState(false);
+   const [selectedClientId, setSelectedClientId]  = useState("");
 
    const getClientList = async () => {
       const { data } = await axios.get('/api/clients');
@@ -121,6 +128,11 @@ function ClientList({isToRefreshData, setIsToRefreshData}) {
    }, [isToRefreshData]);
 
    var filteredClients = clients.filter((client) => client["name"].toLowerCase().includes(searchTerm.toLowerCase()));
+
+   const viewClientOnClick = (clientId) => {
+      setSelectedClientId(clientId);
+      setIsModalVisible(true);
+   };
 
    // Avoid a layout jump when reaching the last page with empty rows.
    const emptyRows =
@@ -201,6 +213,9 @@ function ClientList({isToRefreshData, setIsToRefreshData}) {
                            <StyledTableCell><strong>Número de Telemóvel</strong></StyledTableCell>
                            <StyledTableCell><strong>Morada</strong></StyledTableCell>
                            <StyledTableCell><strong>Código Postal</strong></StyledTableCell>
+                           <StyledTableCell><strong>NIF</strong></StyledTableCell>
+                           <StyledTableCell><strong>Nº Cliente Jomafal</strong></StyledTableCell>
+                           <StyledTableCell><strong>Ações</strong></StyledTableCell>
                         </TableRow>
                      </TableHead>
                      <TableBody>
@@ -220,6 +235,15 @@ function ClientList({isToRefreshData, setIsToRefreshData}) {
                                  {client.address}
                               </StyledTableCell>
                               <StyledTableCell title={client.postalCode}>{client.postalCode}</StyledTableCell>
+                              <StyledTableCell title={client.postalCode}>{client.nif}</StyledTableCell>
+                              <StyledTableCell title={client.postalCode}>{client.clientNumber}</StyledTableCell>
+                              <StyledTableCell>
+                                 <div className="actionTableCell">
+                                    <div className="viewEquipmentButton">
+                                       <Button onClick={() => { viewClientOnClick(client.id) } }><VisibilityIcon></VisibilityIcon></Button>
+                                    </div>
+                                 </div>
+                              </StyledTableCell>
                            </StyledTableRow>
                         ))}
                         {emptyRows > 0 && (
@@ -265,6 +289,7 @@ function ClientList({isToRefreshData, setIsToRefreshData}) {
                   }}
                />
             </Paper>
+            { selectedClientId && <ClientDetail setIsToRefreshData={setIsToRefreshData} isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} clientId={selectedClientId}></ClientDetail>}
          </div>
       );
 }
