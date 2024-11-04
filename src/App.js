@@ -39,7 +39,7 @@ function App() {
                <div className="flex flex-col w-1/2"> {/* Align to the end */}
                   {selectedTab === "equipments" && (
                      <div className="flex flex-row justify-end">
-                        <Button style={{ marginLeft: "auto" }} onClick={() => setModalVisible(true)}>
+                        <Button onClick={() => setModalVisible(true)}>
                            <b>+ Adicionar Equipamento</b>
                         </Button>
                         <EquipmentModal
