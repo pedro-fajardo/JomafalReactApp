@@ -87,7 +87,7 @@ function EquipmentEditModal({
             warranty: warranty,
             warrantyDate: warrantyDate,
             receiptNumber: receiptNumber,
-            partsIva: iva,
+            partsIva: "" + ( Number.isNaN(iva) ? "0" : iva),
             client: {
                name: clientName,
                phoneNumber: phoneNumber,
