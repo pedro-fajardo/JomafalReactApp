@@ -112,6 +112,7 @@ function EquipmentForm(props) {
                      className="border-2"
                      type="text"
                      value={props.receiptNumber}
+                     disabled={!props.warranty}
                      onChange={(e) => props.setReceiptNumber(e.target.value)}
                   />
                </Form.Group>
@@ -123,6 +124,7 @@ function EquipmentForm(props) {
                      className="border-2"
                      type="date"
                      value={props.warrantyDate}
+                     disabled={!props.warranty}
                      onChange={(e) => props.setWarrantyDate(e.target.value)}
                   />
                </Form.Group>

@@ -352,6 +352,7 @@ function EquipmentEditModal({
                            className="border-2"
                            type="text"
                            value={receiptNumber}
+                           disabled={!warranty}
                            onChange={(e) => setReceiptNumber(e.target.value)}
                         />
                      </Form.Group>
@@ -363,6 +364,7 @@ function EquipmentEditModal({
                            className="border-2"
                            type="date"
                            value={warrantyDate}
+                           disabled={!warranty}
                            onChange={(e) => setWarrantyDate(e.target.value)}
                         />
                      </Form.Group>
