@@ -1,38 +1,95 @@
 import React from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, CircularProgress, Box } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-function DeleteModal({ show, handleClose, handleDelete, itemName }) {
-  if (!show) return null;
-
+function DeleteModal({ showDeleteModal, handleCloseDeleteModal, handleDelete, isLoading = false }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-        <div className="text-center">
-          <svg className="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
+    <Dialog
+      open={showDeleteModal || false}
+      onClose={handleCloseDeleteModal}
+      PaperProps={{
+        sx: {
+          borderRadius: 2,
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+          maxWidth: '450px',
+          width: '100%',
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          textAlign: 'center',
+          pt: 4,
+          pb: 1,
+          fontWeight: 600,
+          color: '#2E5077',
+        }}
+      >
+        Confirmar a eliminação
+      </DialogTitle>
 
-          <h3 className="text-xl font-bold text-gray-900 mt-4">Confirmar exclusão</h3>
-          <p className="text-gray-600 mt-2">
-            Tem certeza que deseja excluir {itemName || "este item"}? Esta ação não pode ser desfeita.
-          </p>
-        </div>
+      <DialogContent sx={{ textAlign: 'center', p: 3 }}>
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center' }}>
+          <Box
+            sx={{
+              backgroundColor: 'rgba(230, 57, 70, 0.1)',
+              borderRadius: '50%',
+              width: 80,
+              height: 80,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2
+            }}
+          >
+            <DeleteIcon sx={{ fontSize: 40, color: '#E63946' }} />
+          </Box>
+        </Box>
+        <Typography variant="body1" color="text.secondary">
+          Tem certeza que deseja eliminar este equipamento?
+        </Typography>
+        <Typography variant="body2" color="error" sx={{ mt: 2, fontWeight: 500 }}>
+          Esta ação não pode ser desfeita.
+        </Typography>
+      </DialogContent>
 
-        <div className="mt-6 flex justify-end space-x-3">
-          <button
-            onClick={handleClose}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition duration-200"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={handleDelete}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200"
-          >
-            Excluir
-          </button>
-        </div>
-      </div>
-    </div>
+      <DialogActions sx={{ p: 3, pt: 1 }}>
+        <Button
+          onClick={handleCloseDeleteModal}
+          variant="outlined"
+          sx={{
+            borderColor: '#5B85AA',
+            color: '#5B85AA',
+            fontWeight: 500,
+            '&:hover': {
+              borderColor: '#2E5077',
+              backgroundColor: 'rgba(91, 133, 170, 0.1)',
+            },
+            px: 3
+          }}
+          disabled={isLoading}
+        >
+          Cancelar
+        </Button>
+        <Button
+          onClick={handleDelete}
+          variant="contained"
+          color="error"
+          sx={{
+            backgroundColor: '#E63946',
+            '&:hover': {
+              backgroundColor: '#d32f2f',
+            },
+            fontWeight: 500,
+            px: 3
+          }}
+          disabled={isLoading}
+          startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <DeleteIcon />}
+        >
+          {isLoading ? 'A excluir...' : 'Excluir'}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 

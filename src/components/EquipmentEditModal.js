@@ -1,18 +1,103 @@
 import React, { useState, useEffect } from "react";
 import "dayjs/locale/en-gb";
-import { Form, Button, Col, Row, Table } from "react-bootstrap";
+import { Form, Col, Row, Table } from "react-bootstrap";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { Label } from "reactstrap";
 import Modal from "react-bootstrap/Modal";
-import Box from "@mui/material/Box";
+import {
+   Box,
+   Button,
+   styled,
+   TextField,
+   Paper,
+   Typography,
+   InputAdornment,
+   FormControlLabel,
+   Radio,
+   RadioGroup,
+   Select,
+   MenuItem,
+} from "@mui/material";
 import axios from "axios";
 import { PDFDocument } from "pdf-lib";
 import pdf from "../pdf/Ficha ASJ.pdf";
 import PrintIcon from "@mui/icons-material/Print";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DevicesIcon from '@mui/icons-material/Devices';
+import CodeIcon from '@mui/icons-material/Code';
+import SerialNumberIcon from '@mui/icons-material/Pin';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import BuildIcon from '@mui/icons-material/Build';
+import NotesIcon from '@mui/icons-material/Notes';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import PersonIcon from '@mui/icons-material/Person';
+import PhoneIcon from '@mui/icons-material/Phone';
+import HomeIcon from '@mui/icons-material/Home';
+import MarkunreadMailboxIcon from '@mui/icons-material/MarkunreadMailbox';
+import BadgeIcon from '@mui/icons-material/Badge';
+import TagIcon from '@mui/icons-material/Tag';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+
+// Custom styled button for primary actions
+const PrimaryButton = styled(Button)(({ theme }) => ({
+   backgroundColor: '#5B85AA',
+   color: '#fff',
+   '&:hover': {
+      backgroundColor: '#2E5077',
+   },
+   '&.Mui-disabled': {
+      backgroundColor: 'rgba(0, 0, 0, 0.12)',
+      color: 'rgba(0, 0, 0, 0.26)'
+   }
+}));
+
+// Custom styled button for secondary actions
+const SecondaryButton = styled(Button)(({ theme }) => ({
+   backgroundColor: 'transparent',
+   borderColor: '#5B85AA',
+   color: '#5B85AA',
+   '&:hover': {
+      borderColor: '#2E5077',
+      backgroundColor: 'rgba(91, 133, 170, 0.1)',
+   },
+   '&.Mui-disabled': {
+      borderColor: 'rgba(0, 0, 0, 0.12)',
+      color: 'rgba(0, 0, 0, 0.26)'
+   }
+}));
+
+// Custom styled TextField
+const StyledTextField = styled(TextField)({
+   '& .MuiOutlinedInput-root': {
+      height: '56px',
+      '&:hover fieldset': {
+         borderColor: '#5B85AA',
+      },
+      '&.Mui-focused fieldset': {
+         borderColor: '#5B85AA',
+      },
+   },
+   '& .MuiFormLabel-root.Mui-focused': {
+      color: '#5B85AA',
+   },
+   '& .MuiInputBase-multiline': {
+      height: 'auto',
+   }
+});
+
+// Custom styled Select
+const StyledSelect = styled(Select)({
+   height: '56px',
+   '&:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: '#5B85AA',
+   },
+   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: '#5B85AA',
+   }
+});
 
 function EquipmentEditModal({
    setIsToRefreshData,
@@ -87,7 +172,7 @@ function EquipmentEditModal({
             warranty: warranty,
             warrantyDate: warrantyDate,
             receiptNumber: receiptNumber,
-            partsIva: "" + ( Number.isNaN(iva) ? "0" : iva),
+            partsIva: "" + (Number.isNaN(iva) ? "0" : iva),
             client: {
                name: clientName,
                phoneNumber: phoneNumber,
@@ -183,32 +268,30 @@ function EquipmentEditModal({
          .getTextField("date")
          .setText(
             receivedDateConverted.getDate() +
-               "/" +
-               receivedDateConverted.getMonth() +
-               "/" +
-               receivedDateConverted.getFullYear() +
-               " " +
-               +receivedDateConverted.getHours() +
-               ":" +
-               receivedDateConverted.getMinutes()
+            "/" +
+            receivedDateConverted.getMonth() +
+            "/" +
+            receivedDateConverted.getFullYear() +
+            " " +
+            +receivedDateConverted.getHours() +
+            ":" +
+            receivedDateConverted.getMinutes()
          );
 
       if (warranty) {
          form.getCheckBox("equipmentWarrantyYes").check();
+         form.getTextField("equipmentReceiptNumber").setText("" + receiptNumber);
+          form.getTextField("equipmentWarrantyDate").setText("" + warrantyDate);
       } else {
          form.getCheckBox("equipmentWarrantyNo").check();
       }
 
-      form.getTextField("equipmentReceiptNumber").setText("" + receiptNumber);
-      form.getTextField("equipmentWarrantyDate").setText("" + warrantyDate);
-
-      if(!parts.empty)
-      {
-         parts.forEach((part,index) => {
-            form.getTextField("codeRow"+(index+1)).setText("" + part.code);
-            form.getTextField("quantityRow"+(index+1)).setText("" + part.quantity);
-            form.getTextField("descriptionRow"+(index+1)).setText("" + part.description);
-            form.getTextField("valueRow"+(index+1)).setText("" + part.value);
+      if (!parts.empty) {
+         parts.forEach((part, index) => {
+            form.getTextField("codeRow" + (index + 1)).setText("" + part.code);
+            form.getTextField("quantityRow" + (index + 1)).setText("" + part.quantity);
+            form.getTextField("descriptionRow" + (index + 1)).setText("" + part.description);
+            form.getTextField("valueRow" + (index + 1)).setText("" + part.value);
          });
 
          form.getTextField("baseValue").setText("" + baseValue);
@@ -238,404 +321,592 @@ function EquipmentEditModal({
          centered
       >
          <Modal.Header closeButton>
-            <Modal.Title>Editar Equipamento/Cliente</Modal.Title>
+            <Typography variant="h5" color="#2E5077">Editar Equipamento/Cliente</Typography>
          </Modal.Header>
          <Modal.Body>
             <Form onSubmit={updateEquipmentAndClient}>
-               <Row>
-                  <Col>
-                     <h3>Equipamento</h3>
-                  </Col>
-                  <Col></Col>
-                  <Col></Col>
-                  <Col></Col>
-                  <Col></Col>
-                  <Col></Col>
-                  <Col></Col>
-                  <Col></Col>
-                  <Col>
-                     <Button variant="danger" onClick={printPDF}>
-                        {" "}
-                        <PrintIcon></PrintIcon>
-                        <b> PDF</b>{" "}
-                     </Button>
-                  </Col>
-               </Row>
-               <Row style={{ paddingTop: "1%", paddingBottom: "1%" }}>
-                  <Col>
-                     <Form.Group controlId="name">
-                        <Form.Label>Nome</Form.Label>
-                        <Form.Control
-                           className="border-2"
-                           type="text"
+               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+                  <Typography variant="h6" color="#2E5077">
+                     Equipamento
+                  </Typography>
+                  <PrimaryButton
+                     variant="contained"
+                     onClick={printPDF}
+                     startIcon={<PrintIcon />}
+                  >
+                     PDF
+                  </PrimaryButton>
+               </Box>
+
+               <Paper elevation={0} sx={{ p: 3, mb: 4, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                  <Row className="mb-4">
+                     <Col>
+                        <StyledTextField
+                           fullWidth
+                           label="Nome do Equipamento"
                            value={name}
                            onChange={(e) => setName(e.target.value)}
+                           InputProps={{
+                              startAdornment: (
+                                 <InputAdornment position="start">
+                                    <DevicesIcon color="action" />
+                                 </InputAdornment>
+                              ),
+                           }}
                         />
-                     </Form.Group>
-                  </Col>
-                  <Col>
-                     <Form.Group controlId="name">
-                        <Form.Label>Estado do equipamento</Form.Label>
-                        <Form.Select
-                           className="border-2"
+                     </Col>
+                     <Col>
+                        <StyledSelect
+                           fullWidth
                            value={status}
-                           aria-label="Selecionar estado"
                            onChange={(e) => setStatus(e.target.value)}
+                           label="Estado do equipamento"
                         >
-                           <option value="new">Novo</option>
-                           <option value="repairing">Em Reparação</option>
-                           <option value="waiting parts">
-                              À Espera de Peças
-                           </option>
-                           <option value="repaired">Reparado</option>
-                           <option value="recycle">Reciclagem</option>
-                        </Form.Select>
-                     </Form.Group>
-                  </Col>
-               </Row>
+                           <MenuItem value="new">Novo</MenuItem>
+                           <MenuItem value="repairing">Em Reparação</MenuItem>
+                           <MenuItem value="waiting parts">À Espera de Peças</MenuItem>
+                           <MenuItem value="repaired">Reparado</MenuItem>
+                           <MenuItem value="recycle">Reciclagem</MenuItem>
+                        </StyledSelect>
+                     </Col>
+                  </Row>
 
-               <Row style={{ paddingBottom: "2%" }}>
-                  <Col>
-                     <Form.Group controlId="productNumber">
-                        <Form.Label>PNC</Form.Label>
-                        <Form.Control
-                           className="border-2"
-                           type="text"
+                  <Row className="mb-4">
+                     <Col>
+                        <StyledTextField
+                           fullWidth
+                           label="PNC"
                            value={productNumber}
                            onChange={(e) => setProductNumber(e.target.value)}
+                           InputProps={{
+                              startAdornment: (
+                                 <InputAdornment position="start">
+                                    <CodeIcon color="action" />
+                                 </InputAdornment>
+                              ),
+                           }}
                         />
-                     </Form.Group>
-                  </Col>
-                  <Col>
-                     <Form.Group controlId="serialNumber">
-                        <Form.Label>SN</Form.Label>
-                        <Form.Control
-                           className="border-2"
-                           type="text"
+                     </Col>
+                     <Col>
+                        <StyledTextField
+                           fullWidth
+                           label="SN"
                            value={serialNumber}
                            onChange={(e) => setSerialNumber(e.target.value)}
+                           InputProps={{
+                              startAdornment: (
+                                 <InputAdornment position="start">
+                                    <SerialNumberIcon color="action" />
+                                 </InputAdornment>
+                              ),
+                           }}
                         />
-                     </Form.Group>
-                  </Col>
-               </Row>
-               <Form.Group style={{ paddingBottom: "1%" }} controlId="garanty">
-                  <Form.Label>Garantia</Form.Label>
-                  <Form.Check
-                     inline
-                     label="Sim"
-                     name="group1"
-                     type="radio"
-                     id={`inline-radio-1`}
-                     checked={warranty}
-                     onChange={() => {
-                        setWarranty(true);
-                     }}
-                     style={{ marginLeft: "2%" }}
-                  />
-                  <Form.Check
-                     inline
-                     label="Não"
-                     name="group1"
-                     type="radio"
-                     id={`inline-radio-2`}
-                     checked={!warranty}
-                     onChange={() => {
-                        setWarranty(false);
-                     }}
-                  />
-               </Form.Group>
-               <Row style={{ paddingBottom: "2%" }}>
-                  <Col>
-                     <Form.Group controlId="receiptNumber">
-                        <Form.Label>Nº Fatura</Form.Label>
-                        <Form.Control
-                           className="border-2"
-                           type="text"
-                           value={receiptNumber}
-                           disabled={!warranty}
-                           onChange={(e) => setReceiptNumber(e.target.value)}
+                     </Col>
+                  </Row>
+
+                  <Box sx={{ mb: 3 }}>
+                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        Garantia
+                     </Typography>
+                     <RadioGroup
+                        row
+                        value={warranty}
+                        onChange={(e) => setWarranty(e.target.value === 'true')}
+                     >
+                        <FormControlLabel
+                           value={true}
+                           control={<Radio sx={{
+                              '&.Mui-checked': {
+                                 color: '#5B85AA',
+                              },
+                           }} />}
+                           label="Sim"
                         />
-                     </Form.Group>
-                  </Col>
-                  <Col>
-                     <Form.Group controlId="warrantyDate">
-                        <Form.Label>Data</Form.Label>
-                        <Form.Control
-                           className="border-2"
-                           type="date"
-                           value={warrantyDate}
-                           disabled={!warranty}
-                           onChange={(e) => setWarrantyDate(e.target.value)}
+                        <FormControlLabel
+                           value={false}
+                           control={<Radio sx={{
+                              '&.Mui-checked': {
+                                 color: '#5B85AA',
+                              },
+                           }} />}
+                           label="Não"
                         />
-                     </Form.Group>
-                  </Col>
-               </Row>
-               <Form.Group
-                  style={{ paddingBottom: "1%" }}
-                  controlId="breakdown"
-               >
-                  <Form.Label>Avaria</Form.Label>
-                  <Form.Control
-                     className="border-2"
-                     as="textarea"
-                     rows={4}
-                     value={breakdown}
-                     onChange={(e) => setBreakdown(e.target.value)}
-                  />
-               </Form.Group>
-               <Form.Group controlId="observations">
-                  <Form.Label>Observações</Form.Label>
-                  <Form.Control
-                     className="border-2"
-                     as="textarea"
-                     rows={2}
-                     value={observations}
-                     onChange={(e) => setObservations(e.target.value)}
-                  />
-               </Form.Group>
-               {/* Parts Table */}
-               <h4 className="pt-4">Lista de Peças</h4>
-               <Table striped bordered hover size="sm">
-                  <thead>
-                     <tr>
-                        <th>Código</th>
-                        <th>Quantidade</th>
-                        <th>Descrição</th>
-                        <th>Valor (€)</th>
-                        <th>Ação</th> {/* Add a header for the action column */}
-                     </tr>
-                  </thead>
-                  <tbody>
-                     {parts &&
-                        parts.map((part, index) => (
-                           <tr key={index}>
-                              <td>
-                                 <Form.Control
-                                    type="text"
-                                    value={part.code}
-                                    onChange={(e) =>
-                                       updatePart(index, "code", e.target.value)
-                                    }
-                                 />
-                              </td>
-                              <td>
-                                 <Form.Control
-                                    type="number"
-                                    value={part.quantity}
-                                    onChange={(e) =>
-                                       updatePart(
-                                          index,
-                                          "quantity",
-                                          e.target.value
-                                       )
-                                    }
-                                 />
-                              </td>
-                              <td>
-                                 <Form.Control
-                                    type="text"
-                                    value={part.description}
-                                    onChange={(e) =>
-                                       updatePart(
-                                          index,
-                                          "description",
-                                          e.target.value
-                                       )
-                                    }
-                                 />
-                              </td>
-                              <td>
-                                 <Form.Control
-                                    type="number"
-                                    value={part.value}
-                                    onChange={(e) =>
-                                       updatePart(
-                                          index,
-                                          "value",
-                                          parseFloat(e.target.value)
-                                       )
-                                    }
-                                 />
-                              </td>
-                              <td>
-                                 <button
-                                    type="button"
-                                    onClick={() => deletePart(index)} // Handle delete action
-                                    style={{
-                                       border: "none",
-                                       background: "none",
-                                       cursor: "pointer",
-                                    }}
-                                 >
-                                    <DeleteIcon style={{ color: "red" }} />{" "}
-                                    {/* Use Material Icon */}
-                                 </button>
-                              </td>
+                     </RadioGroup>
+                  </Box>
+
+                  {warranty && (
+                     <Row className="mb-4">
+                        <Col>
+                           <StyledTextField
+                              fullWidth
+                              label="Nº Fatura"
+                              value={receiptNumber}
+                              disabled={!warranty}
+                              onChange={(e) => setReceiptNumber(e.target.value)}
+                              InputProps={{
+                                 startAdornment: (
+                                    <InputAdornment position="start">
+                                       <ReceiptIcon color="action" />
+                                    </InputAdornment>
+                                 ),
+                              }}
+                           />
+                        </Col>
+                        <Col>
+                           <StyledTextField
+                              fullWidth
+                              label="Data da Garantia"
+                              type="date"
+                              value={warrantyDate}
+                              disabled={!warranty}
+                              onChange={(e) => setWarrantyDate(e.target.value)}
+                              InputLabelProps={{
+                                 shrink: true,
+                              }}
+                              InputProps={{
+                                 startAdornment: (
+                                    <InputAdornment position="start">
+                                       <VerifiedIcon color="action" />
+                                    </InputAdornment>
+                                 ),
+                              }}
+                           />
+                        </Col>
+                     </Row>
+                  )}
+
+                  <Box sx={{ mb: 3 }}>
+                     <StyledTextField
+                        fullWidth
+                        label="Descrição da Avaria"
+                        multiline
+                        rows={4}
+                        value={breakdown}
+                        onChange={(e) => setBreakdown(e.target.value)}
+                        InputProps={{
+                           startAdornment: (
+                              <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1.5 }}>
+                                 <BuildIcon color="action" />
+                              </InputAdornment>
+                           ),
+                        }}
+                     />
+                  </Box>
+
+                  <Box sx={{ mb: 3 }}>
+                     <StyledTextField
+                        fullWidth
+                        label="Observações"
+                        multiline
+                        rows={3}
+                        value={observations}
+                        onChange={(e) => setObservations(e.target.value)}
+                        InputProps={{
+                           startAdornment: (
+                              <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1.5 }}>
+                                 <NotesIcon color="action" />
+                              </InputAdornment>
+                           ),
+                        }}
+                     />
+                  </Box>
+               </Paper>
+
+               <Paper elevation={0} sx={{ p: 3, mb: 4, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                  <Typography variant="h6" color="#2E5077" gutterBottom>
+                     Lista de Peças
+                  </Typography>
+
+                  <Box sx={{
+                     border: '1px solid #e0e0e0',
+                     borderRadius: 1,
+                     overflow: 'hidden',
+                     mb: 3
+                  }}>
+                     <Table>
+                        <thead>
+                           <tr style={{ backgroundColor: '#f5f5f5' }}>
+                              <th style={{
+                                 padding: '16px',
+                                 borderBottom: '2px solid #e0e0e0',
+                                 color: '#2E5077',
+                                 fontWeight: 600,
+                                 width: '20%'
+                              }}>Código</th>
+                              <th style={{
+                                 padding: '16px',
+                                 borderBottom: '2px solid #e0e0e0',
+                                 color: '#2E5077',
+                                 fontWeight: 600,
+                                 width: '15%'
+                              }}>Quantidade</th>
+                              <th style={{
+                                 padding: '16px',
+                                 borderBottom: '2px solid #e0e0e0',
+                                 color: '#2E5077',
+                                 fontWeight: 600,
+                                 width: '40%'
+                              }}>Descrição</th>
+                              <th style={{
+                                 padding: '16px',
+                                 borderBottom: '2px solid #e0e0e0',
+                                 color: '#2E5077',
+                                 fontWeight: 600,
+                                 width: '15%'
+                              }}>Valor (€)</th>
+                              <th style={{
+                                 padding: '16px',
+                                 borderBottom: '2px solid #e0e0e0',
+                                 color: '#2E5077',
+                                 fontWeight: 600,
+                                 width: '10%'
+                              }}>Ação</th>
                            </tr>
-                        ))}
-                  </tbody>
-               </Table>
-               <Button variant="primary" onClick={addPart}>
-                  Adicionar Peça
-               </Button>
-               {/* Calculation fields */}
-               <Row className="pt-3">
-                  <Col>
-                     <Form.Group controlId="baseValue">
-                        <Form.Label>Valor Base (€)</Form.Label>
-                        <Form.Control
-                           type="number"
+                        </thead>
+                        <tbody>
+                           {parts && parts.map((part, index) => (
+                              <tr key={index} style={{
+                                 backgroundColor: index % 2 === 0 ? '#ffffff' : '#fafafa'
+                              }}>
+                                 <td style={{ padding: '8px 16px' }}>
+                                    <StyledTextField
+                                       fullWidth
+                                       size="small"
+                                       value={part.code}
+                                       onChange={(e) => updatePart(index, "code", e.target.value)}
+                                       placeholder="Código"
+                                       sx={{
+                                          '& .MuiOutlinedInput-root': {
+                                             backgroundColor: '#ffffff'
+                                          }
+                                       }}
+                                    />
+                                 </td>
+                                 <td style={{ padding: '8px 16px' }}>
+                                    <StyledTextField
+                                       fullWidth
+                                       size="small"
+                                       type="number"
+                                       value={part.quantity}
+                                       onChange={(e) => updatePart(index, "quantity", e.target.value)}
+                                       placeholder="Qtd."
+                                       sx={{
+                                          '& .MuiOutlinedInput-root': {
+                                             backgroundColor: '#ffffff'
+                                          }
+                                       }}
+                                    />
+                                 </td>
+                                 <td style={{ padding: '8px 16px' }}>
+                                    <StyledTextField
+                                       fullWidth
+                                       size="small"
+                                       value={part.description}
+                                       onChange={(e) => updatePart(index, "description", e.target.value)}
+                                       placeholder="Descrição da peça"
+                                       sx={{
+                                          '& .MuiOutlinedInput-root': {
+                                             backgroundColor: '#ffffff'
+                                          }
+                                       }}
+                                    />
+                                 </td>
+                                 <td style={{ padding: '8px 16px' }}>
+                                    <StyledTextField
+                                       fullWidth
+                                       size="small"
+                                       type="number"
+                                       value={part.value}
+                                       onChange={(e) => updatePart(index, "value", parseFloat(e.target.value))}
+                                       placeholder="0.00"
+                                       sx={{
+                                          '& .MuiOutlinedInput-root': {
+                                             backgroundColor: '#ffffff'
+                                          }
+                                       }}
+                                    />
+                                 </td>
+                                 <td style={{ padding: '8px 16px', textAlign: 'center', verticalAlign: 'middle' }}>
+                                    <Button
+                                       onClick={() => deletePart(index)}
+                                       color="error"
+                                       sx={{
+                                          minWidth: '32px',
+                                          height: '32px',
+                                          padding: 0,
+                                          borderRadius: '4px',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          '&:hover': {
+                                             backgroundColor: 'rgba(211, 47, 47, 0.04)'
+                                          }
+                                       }}
+                                    >
+                                       <DeleteIcon sx={{ fontSize: 20 }} />
+                                    </Button>
+                                 </td>
+                              </tr>
+                           ))}
+                           {parts.length === 0 && (
+                              <tr>
+                                 <td colSpan={5} style={{
+                                    padding: '24px',
+                                    textAlign: 'center',
+                                    color: '#666',
+                                    backgroundColor: '#fafafa'
+                                 }}>
+                                    Nenhuma peça adicionada
+                                 </td>
+                              </tr>
+                           )}
+                        </tbody>
+                     </Table>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                     <SecondaryButton
+                        variant="outlined"
+                        onClick={addPart}
+                        size="large"
+                        startIcon={<i className="fas fa-plus" />}
+                     >
+                        Adicionar Peça
+                     </SecondaryButton>
+
+                     <Box sx={{
+                        display: 'flex',
+                        gap: 2,
+                        width: '60%'
+                     }}>
+                        <StyledTextField
+                           fullWidth
+                           label="Valor Base (€)"
                            value={baseValue.toFixed(2)}
-                           readOnly
+                           InputProps={{
+                              readOnly: true,
+                              startAdornment: (
+                                 <InputAdornment position="start">€</InputAdornment>
+                              ),
+                           }}
                         />
-                     </Form.Group>
-                  </Col>
-                  <Col>
-                     <Form.Group controlId="iva">
-                        <Form.Label>IVA (%)</Form.Label>
-                        <Form.Control
+                        <StyledTextField
+                           fullWidth
+                           label="IVA (%)"
                            type="number"
                            value={iva}
                            onChange={(e) => setIva(parseFloat(e.target.value))}
+                           InputProps={{
+                              endAdornment: (
+                                 <InputAdornment position="end">%</InputAdornment>
+                              ),
+                           }}
                         />
-                     </Form.Group>
-                  </Col>
-                  <Col>
-                     <Form.Group controlId="totalValue">
-                        <Form.Label>Valor Total (€)</Form.Label>
-                        <Form.Control
-                           type="number"
+                        <StyledTextField
+                           fullWidth
+                           label="Valor Total (€)"
                            value={totalValue.toFixed(2)}
-                           readOnly
+                           InputProps={{
+                              readOnly: true,
+                              startAdornment: (
+                                 <InputAdornment position="start">€</InputAdornment>
+                              ),
+                           }}
                         />
-                     </Form.Group>
-                  </Col>
-               </Row>
-               <hr></hr>
+                     </Box>
+                  </Box>
+               </Paper>
 
-               <h3>Cliente</h3>
-               <Form.Group
-                  style={{ paddingTop: "1%", paddingBottom: "1%" }}
-                  controlId="clientName"
-               >
-                  <Form.Label>Nome</Form.Label>
-                  <Form.Control
-                     className="border-2"
-                     type="text"
-                     value={clientName}
-                     onChange={(e) => setClientName(e.target.value)}
-                  />
-               </Form.Group>
-               <Form.Group
-                  style={{ paddingBottom: "1%" }}
-                  controlId="clientAddress"
-               >
-                  <Form.Label>Morada</Form.Label>
-                  <Form.Control
-                     className="border-2"
-                     type="text"
-                     value={address}
-                     onChange={(e) => setAddress(e.target.value)}
-                  />
-               </Form.Group>
-               <Row>
-                  <Col>
-                     <Label>Nº de Telemóvel</Label>
-                     <Form.Control
-                        className="border-2"
-                        type="number"
-                        value={phoneNumber}
-                        onChange={(e) => handlePhoneNumber(e.target.value)}
+               <Paper elevation={0} sx={{ p: 3, mb: 4, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                  <Typography variant="h6" color="#2E5077" gutterBottom>
+                     Cliente
+                  </Typography>
+
+                  <Box sx={{ mb: 3 }}>
+                     <StyledTextField
+                        fullWidth
+                        label="Nome"
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
+                        InputProps={{
+                           startAdornment: (
+                              <InputAdornment position="start">
+                                 <PersonIcon color="action" />
+                              </InputAdornment>
+                           ),
+                        }}
                      />
-                  </Col>
-                  <Col></Col>
-                  <Col>
-                     <Form.Group
-                        style={{ paddingBottom: "1%" }}
-                        controlId="clientPostalCode"
-                     >
-                        <Form.Label>Código de Postal</Form.Label>
-                        <Form.Control
-                           className="border-2"
-                           type="text"
+                  </Box>
+
+                  <Box sx={{ mb: 3 }}>
+                     <StyledTextField
+                        fullWidth
+                        label="Morada"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        InputProps={{
+                           startAdornment: (
+                              <InputAdornment position="start">
+                                 <HomeIcon color="action" />
+                              </InputAdornment>
+                           ),
+                        }}
+                     />
+                  </Box>
+
+                  <Row className="mb-4">
+                     <Col>
+                        <StyledTextField
+                           fullWidth
+                           label="Nº de Telemóvel"
+                           type="number"
+                           value={phoneNumber}
+                           onChange={(e) => handlePhoneNumber(e.target.value)}
+                           InputProps={{
+                              startAdornment: (
+                                 <InputAdornment position="start">
+                                    <PhoneIcon color="action" />
+                                 </InputAdornment>
+                              ),
+                           }}
+                        />
+                     </Col>
+                     <Col>
+                        <StyledTextField
+                           fullWidth
+                           label="Código Postal"
                            value={postalCode}
                            onChange={(e) => setPostalCode(e.target.value)}
+                           InputProps={{
+                              startAdornment: (
+                                 <InputAdornment position="start">
+                                    <MarkunreadMailboxIcon color="action" />
+                                 </InputAdornment>
+                              ),
+                           }}
                         />
-                     </Form.Group>
-                  </Col>
-                  <Col></Col>
-               </Row>
-               <Row className="py-2">
-                  <Col>
-                     <Form.Group
-                        style={{ paddingBottom: "1%" }}
-                        controlId="clientNif"
-                     >
-                        <Form.Label>NIF</Form.Label>
-                        <Form.Control
-                           className="border-2"
+                     </Col>
+                  </Row>
+
+                  <Row className="mb-4">
+                     <Col>
+                        <StyledTextField
+                           fullWidth
+                           label="NIF"
                            type="number"
                            value={nif}
                            onChange={(e) => setNif(e.target.value)}
+                           InputProps={{
+                              startAdornment: (
+                                 <InputAdornment position="start">
+                                    <BadgeIcon color="action" />
+                                 </InputAdornment>
+                              ),
+                           }}
                         />
-                     </Form.Group>
-                  </Col>
-                  <Col></Col>
-                  <Col>
-                     <Form.Group
-                        style={{ paddingBottom: "1%" }}
-                        controlId="clientNumber"
-                     >
-                        <Form.Label>Nº Cliente Jomafal</Form.Label>
-                        <Form.Control
-                           className="border-2"
-                           type="text"
+                     </Col>
+                     <Col>
+                        <StyledTextField
+                           fullWidth
+                           label="Nº Cliente Jomafal"
                            value={clientNumber}
                            onChange={(e) => setClientNumber(e.target.value)}
+                           InputProps={{
+                              startAdornment: (
+                                 <InputAdornment position="start">
+                                    <TagIcon color="action" />
+                                 </InputAdornment>
+                              ),
+                           }}
                         />
-                     </Form.Group>
-                  </Col>
-                  <Col></Col>
-               </Row>
+                     </Col>
+                  </Row>
+               </Paper>
 
-               <hr></hr>
+               <Paper elevation={0} sx={{ p: 3, mb: 4, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                  <Typography variant="h6" color="#2E5077" gutterBottom>
+                     Informações do atendimento
+                  </Typography>
 
-               <Row style={{ paddingTop: "1%", paddingBottom: "1%" }}>
-                  <Col>
-                     <Label>Data e Hora de atendimento</Label>
-                     <LocalizationProvider
-                        dateAdapter={AdapterDayjs}
-                        adapterLocale={"en-gb"}
-                     >
-                        <DateTimePicker
-                           onChange={(value) => setReceivedDate(value)}
-                           value={dayjs(receivedDate)}
-                           slotProps={{ textField: { size: "small" } }}
-                           orientation="landscape"
-                           views={["year", "month", "day", "hours", "minutes"]}
-                        />
-                     </LocalizationProvider>
-                  </Col>
-                  <Col></Col>
-                  <Col>
-                     <Form.Group
-                        style={{ paddingBottom: "1%" }}
-                        controlId="documentNumber"
-                     >
-                        <Form.Label>Documento Nº</Form.Label>
-                        <Form.Control
-                           className="border-2"
-                           type="text"
-                           value={documentNumber}
-                           onChange={(e) => setDocumentNumber(e.target.value)}
-                        />
-                     </Form.Group>
-                  </Col>
-                  <Col></Col>
-               </Row>
+                  <Row className="mb-4">
+                     <Col>
+                        <Box sx={{ mb: 2 }}>
+                           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                              Data e Hora de atendimento
+                           </Typography>
+                           <LocalizationProvider
+                              dateAdapter={AdapterDayjs}
+                              adapterLocale={"en-gb"}
+                           >
+                              <DateTimePicker
+                                 onChange={(value) => setReceivedDate(value)}
+                                 value={dayjs(receivedDate)}
+                                 slotProps={{
+                                    textField: {
+                                       variant: "outlined",
+                                       fullWidth: true,
+                                       sx: {
+                                          '& .MuiOutlinedInput-root': {
+                                             height: '56px',
+                                             '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#5B85AA',
+                                             },
+                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#5B85AA',
+                                             }
+                                          },
+                                          '& .MuiFormLabel-root.Mui-focused': {
+                                             color: '#5B85AA',
+                                          }
+                                       },
+                                       InputProps: {
+                                          startAdornment: (
+                                             <InputAdornment position="start">
+                                                <CalendarTodayIcon color="action" />
+                                             </InputAdornment>
+                                          ),
+                                          placeholder: ""
+                                       }
+                                    }
+                                 }}
+                                 orientation="landscape"
+                                 views={["year", "month", "day", "hours", "minutes"]}
+                              />
+                           </LocalizationProvider>
+                        </Box>
+                     </Col>
+                     <Col>
+                        <Box sx={{ mb: 2 }}>
+                           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                              Documento Nº
+                           </Typography>
+                           <StyledTextField
+                              fullWidth
+                              placeholder="Introduza o número do documento"
+                              variant="outlined"
+                              value={documentNumber}
+                              onChange={(e) => setDocumentNumber(e.target.value)}
+                              InputProps={{
+                                 startAdornment: (
+                                    <InputAdornment position="start">
+                                       <AssignmentIcon color="action" />
+                                    </InputAdornment>
+                                 ),
+                              }}
+                           />
+                        </Box>
+                     </Col>
+                  </Row>
+               </Paper>
 
-               <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                  <Button type="submit">Guardar Alterações</Button>
+               <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
+                  <PrimaryButton
+                     variant="contained"
+                     type="submit"
+                     size="large"
+                  >
+                     Guardar Alterações
+                  </PrimaryButton>
                </Box>
             </Form>
          </Modal.Body>

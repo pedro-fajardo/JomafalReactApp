@@ -2,6 +2,8 @@ import { useState } from "react";
 import EquipmentModal from "../components/EquipmentModal";
 import EquipmentList from "../components/EquipmentList";
 import EquipmentEditModal from "../components/EquipmentEditModal";
+import { Button, Box, Paper } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 function EquipmentPage() {
    const [isVisible, setModalVisible] = useState(false);
@@ -10,23 +12,38 @@ function EquipmentPage() {
    const [editEquipmentId, setEditEquipmentId] = useState();
 
    return (
-      <div className="max-w-full px-4 sm:px-6 lg:px-8 mx-auto">
-         <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-            <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-               <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Lista de Equipamentos</h2>
-
-               <button
+      <Box sx={{ maxWidth: '100%', px: { xs: 2, sm: 3, lg: 4 }, mx: 'auto' }}>
+         <Paper
+            elevation={2}
+            sx={{
+               borderRadius: 2,
+               p: 3,
+               mt: 2,
+               backgroundColor: '#fff'
+            }}
+         >
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
+               <Button
+                  variant="contained"
                   onClick={() => setModalVisible(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-200 flex items-center"
+                  startIcon={<AddIcon />}
+                  sx={{
+                     backgroundColor: '#5B85AA',
+                     '&:hover': {
+                        backgroundColor: '#2E5077',
+                     },
+                     borderRadius: 1,
+                     boxShadow: '0 2px 8px rgba(46, 80, 119, 0.2)',
+                     px: 2,
+                     py: 1,
+                     fontWeight: 500
+                  }}
                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                     <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-                  </svg>
                   Adicionar Equipamento
-               </button>
-            </div>
+               </Button>
+            </Box>
 
-            <div>
+            <Box>
                <EquipmentList
                   isToRefreshData={isToRefreshData}
                   setIsToRefreshData={setIsToRefreshData}
@@ -42,15 +59,15 @@ function EquipmentPage() {
                      equipmentId={editEquipmentId}
                   />
                )}
-            </div>
-         </div>
+            </Box>
+         </Paper>
 
          <EquipmentModal
             setIsToRefreshData={setIsToRefreshData}
             isVisible={isVisible}
             setModalVisible={setModalVisible}
          />
-      </div>
+      </Box>
    );
 }
 
